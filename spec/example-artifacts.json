@@ -24,6 +24,11 @@
           "name": "com.oracle.reports",
           "version": "???",
           "layer":"server"
+        },{
+          "name": "com.oracle.weblogic.admin",
+          "version": "10.3.6",
+          "layer":"server",
+          "attributes": ["url"]
         }
       ]
     }
