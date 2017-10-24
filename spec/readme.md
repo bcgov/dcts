@@ -6,13 +6,14 @@
 * Artifact
 * Component is the manifestation of deployed artifacts. A component can only be manifested by one, and only one, artifact.
 * Server
-
+* Interface
 
 # Workflow
 1. POST _Artifact Specification_ to `/deployments/start` which returns the _Deployment Specification Plan_ with a `plan id`
 1. Parse _Deployment Specification Plan_, extract parameters/arguments and execute deployment.
 1. POST the _Deployment Specification Plan_ to `/deployments/<plan id>/finish` indicating if it was successful or not.
 
+# Interfaces
 
 # Artifact Specification
 
