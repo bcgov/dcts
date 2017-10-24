@@ -4,7 +4,7 @@
     "symbolicName": "com.oracle.ofm",
     "name": "Oracle Fusion Middleware",
     "description": "Oracle's complete family of application infrastructure products—from the #1 Java application server to SOA and enterprise portals—are integrated with Oracle Applications and technologies to speed implementation and lower the cost of management and change. Best-of-breed offerings and unique hot-pluggable capabilities provide a foundation for innovation and extend the business value of existing investments.",
-    "url": ""
+    "url": "",
     "vendor": "Oracle",
     "vendorContact": "support@oracle.com",
     "version": "11.1.1",
@@ -32,7 +32,7 @@
     "name": "ca.bc.gov.nrs.titan.nrs-titan-ds",
     "version": "1.0.0",
     "deploymentSpec":{
-      "host": {"selector":{"name":"com.oracle.weblogic.admin", "version":"[10,11)"}, "quantifier":"+", "expand":"url"}
+      "host": {"selector":{"name":"com.oracle.weblogic.admin", "version":"[10,11)"}, "quantifier":"+", "expand":"url"},
       "credentials":[
         {"selector":{"name":"com.oracle.weblogic.credential.deployer"}}
       ]
@@ -57,7 +57,7 @@
     "name": "ca.bc.gov.nrs.titan.nrs-titan-api",
     "version": "1.0.0",
     "deploymentSpec":{
-      "host": {"selector":{"name":"com.oracle.weblogic.admin", "version":"[10,11)"}, "quantifier":"+", "expand":"url"}
+      "host": {"selector":{"name":"com.oracle.weblogic.admin", "version":"[10,11)"}, "quantifier":"+", "expand":"url"},
       "credentials":[
         {"selector":{"name":"com.oracle.weblogic.credential.deployer"}}
       ]
@@ -83,7 +83,7 @@
     "name": "ca.bc.gov.nrs.titan.nrs-titan-ui",
     "version": "1.0.0",
     "deploymentSpec":{
-      "host": {"selector":{"name":"com.oracle.weblogic.admin", "version":"[10,11)"}, "quantifier":"1+", "expand":"url"}
+      "host": {"selector":{"name":"com.oracle.weblogic.admin", "version":"[10,11)"}, "quantifier":"1+", "expand":"url"},
       "credentials":[
         {"selector":{"name":"com.oracle.weblogic.credential.deployer"}}
       ]
