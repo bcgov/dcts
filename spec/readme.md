@@ -4,7 +4,7 @@
 * [Labels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) are key/value pairs that are attached to objects. Labels are intended to be used to specify identifying attributes of objects that are meaningful and relevant to users, but do not directly imply semantics to the core system. Labels can be used to organize and to select subsets of objects.
 * [Annotations](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/) are arbitrary non-identifying metadata attached to objects.
 * Artifact
-* Component
+* Component is the manifestation of deployed artifacts. A component can only be manifested by one, and only one, artifact.
 * Server
 
 
