@@ -25,14 +25,12 @@
           "ipv6": []
         }
       }
-    }
+    },
     "labels": {
-      {
         "environment":"delivery",
         "dc-provider":"hp",
         "dc-region":"calgary",
         "reserved-for": "OFM11g"
-      }
     }
   },{
     "name": "TROY",
@@ -60,14 +58,12 @@
           "ipv6": []
         }
       }
-    }
+    },
     "labels": {
-      {
         "environment":"test",
         "dc-provider":"hp",
         "dc-region":"calgary",
         "reserved-for": "OFM11g"
-      }
     }
   },{
     "name": "NICHBURG",
@@ -97,12 +93,10 @@
       }
     }
     "labels": {
-      {
         "environment":"production",
         "dc-provider":"hp",
         "dc-region":"kamloops",
         "reserved-for": "OFM11g"
-      }
     }
   }
 ]
