@@ -3,20 +3,20 @@
     "name": "BEAVERTON",
     "facts": {
       "fqn":"BEAVERTON.bcgov",
-      "all_ipv4_addresses":[]
-      "all_ipv6_addresses":[]
-      "default_ipv4":"10.0.10.15"
-      "default_ipv6":""
+      "all_ipv4_addresses":[],
+      "all_ipv6_addresses":[],
+      "default_ipv4":"10.0.10.15",
+      "default_ipv6":"",
       "devices":{},
-      "os_family": "SunOS"
+      "os_family": "SunOS",
       "os_name": "SunOS",
       "os_version": "",
       "interfaces":{
         "lo":{},
-        "eth1":{}
+        "eth1":{},
         "eth0":{
           "active":true,
-          "macaddress": ""
+          "macaddress": "",
           "ipv4": {
             "address": "10.0.10.15",                                                                                
             "netmask": "255.255.255.0",                                                                            
@@ -38,20 +38,20 @@
     "name": "TROY",
     "facts": {
       "fqn":"TROY.bcgov",
-      "all_ipv4_addresses":[]
-      "all_ipv6_addresses":[]
-      "default_ipv4":"10.0.20.15"
-      "default_ipv6":{}
+      "all_ipv4_addresses":[],
+      "all_ipv6_addresses":[],
+      "default_ipv4":"10.0.20.15",
+      "default_ipv6":{},
       "devices":{},
-      "os_family": "SunOS"
+      "os_family": "SunOS",
       "os_name": "SunOS",
       "os_version": "",
       "interfaces":{
         "lo":{},
-        "eth1":{}
+        "eth1":{},
         "eth0":{
           "active":true,
-          "macaddress": ""
+          "macaddress": "",
           "ipv4": {
             "address": "10.0.20.16",                                                                                
             "netmask": "255.255.255.0",                                                                            
@@ -73,20 +73,20 @@
     "name": "NICHBURG",
     "facts": {
       "fqn":"NICHBURG.bcgov",
-      "all_ipv4_addresses":[]
-      "all_ipv6_addresses":[]
+      "all_ipv4_addresses":[],
+      "all_ipv6_addresses":[],
       "default_ipv4": "10.0.40.15"
-      "default_ipv6":{}
+      "default_ipv6":{},
       "devices":{},
-      "os_family": "SunOS"
+      "os_family": "SunOS",
       "os_name": "SunOS",
       "os_version": "",
       "interfaces":{
         "lo":{},
-        "eth1":{}
+        "eth1":{},
         "eth0":{
           "active":true,
-          "macaddress": ""
+          "macaddress": "",
           "ipv4": {
             "address": "10.0.40.15",
             "netmask": "255.255.255.0",                                                                            
