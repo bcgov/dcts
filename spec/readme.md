@@ -48,3 +48,4 @@
 * [OSGi Export-Package](https://osgi.org/download/r6/osgi.core-6.0.0.pdf#page=50)
 * [OSGi Version Range](https://osgi.org/download/r6/osgi.core-6.0.0.pdf#page=36)
 * [How does maven sort version numbers?](https://stackoverflow.com/questions/13004443/how-does-maven-sort-version-numbers)
+* [City Name Picker Service](http://names.drycodes.com/10?nameOptions=cities&combine=1&case=upper&separator=_)
