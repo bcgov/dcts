@@ -37,8 +37,11 @@
 | provides | |
 | requires | |
 
-# Deployment Specification
-
+# Artifact Deployment Plan
+| Field | Description |
+| :--- | :--- |
+| id | |
+| artifactSpec | Resolved [artifactSpec](#artifactSpec) |
 
 # References:
 * [OSGi Import-Package](https://osgi.org/download/r6/osgi.core-6.0.0.pdf#page=50)
