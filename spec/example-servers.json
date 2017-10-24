@@ -71,7 +71,7 @@
       "fqn":"NICHBURG.bcgov",
       "all_ipv4_addresses":[],
       "all_ipv6_addresses":[],
-      "default_ipv4": "10.0.40.15"
+      "default_ipv4": "10.0.40.15",
       "default_ipv6":{},
       "devices":{},
       "os_family": "SunOS",
@@ -91,7 +91,7 @@
           "ipv6": []
         }
       }
-    }
+    },
     "labels": {
         "environment":"production",
         "dc-provider":"hp",
