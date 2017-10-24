@@ -21,7 +21,7 @@
 | Field | Description |
 | :--- | :--- |
 | system | |
-| name | |
+| name | Uquiquely identify this artifact in the whole CMDB. It is equivalent to maven "`${groupId}.${artifactId}`"|
 | version | |
 | deploymentSpec | see [deploymentSpec](#deploymentSpec)|
 | runtimeSpec | see [runtimeSpec](#runtimeSpec)|
