@@ -45,7 +45,7 @@ key/value map where the value is of type [Selector](#selector)
 | :--- | :--- | :--- | :--- |
 | selector | array of [MatchExpression](#MatchExpression) | `[{"key":"environment", "operator":"In", "value":["${input.environemnt}"]}]` | |
 | quantifier | String | `1` | `+` (zero or one), `*` (zero or more), `?` (one or more), `n` (exact `n` times) |
-| attributes | array of string | `[]` | Define wicth attributes to expanded/provided. Empty array means `all`.|
+| attributes | array of string | `[]` | Define which attributes to expanded/provided. Empty array means `all`.|
 | _matches_ | array | `[]` | (Output) Upon resolving the selector, this field will contain an array of components matching the selector. |
 
 ## MatchExpression
@@ -61,7 +61,7 @@ Array of expressions are ANDed.
 | Field | Type | Description |
 | :--- | :--- | :--- |
 | provides | array of [Provide](#provide) | |
-| requires | array of [Require](#pequire) | |
+| requires | array of [Require](#require) | |
 
 ## Provide
 | Field | Type | Default | Description |
