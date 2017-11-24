@@ -34,8 +34,8 @@
 | name | | | Uquiquely identify this artifact in the whole CMDB. It is equivalent to Maven `${groupId}.${artifactId}`|
 | _version_ | [stringTemplate](#string-template) | `"${input.version}"` | (Parameter, Output) |
 | _environment_ | [stringTemplate](#string-template) | `"${input.environment}"` | (Parameter, Output) |
-| deploymentSpec | map of [Selector](#selector) | | see [deploymentSpec](#deploymentSpec)|
-| runtimeSpec | [runtimeSpec](#runtimespec) | | |
+| provides | array of [Provide](#provide) | |
+| requires | map of [Require](#require) | |
 
 ## DeploymentSpec
 key/value map where the value is of type [Selector](#selector)
@@ -57,16 +57,10 @@ Array of expressions are ANDed.
 | operator | enum (string) | `"In"` | `"In"`, `"NotIn"` |
 | values | array of [stringTemplate](#string-template) | `[]` | |
 
-## RuntimeSpec
-| Field | Type | Description |
-| :--- | :--- | :--- |
-| provides | array of [Provide](#provide) | |
-| requires | array of [Require](#require) | |
-
 ## Provide
 | Field | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| interface | string | | The uniquely identified interface it provides |
+| interface | string | | The uniquely identified interface it provides | 
 | layer | enum (string) | | `"server"`, `"router"`, `"client"` |
 | attributes | map of [stringTemplate](#string-template) | | |
 | labels | map of [stringTemplate](#string-template) | `{"interface":"$interface", "version":"$input.version", "environment":"$input.environment", "layer":"$layer"}` |  |
@@ -75,6 +69,8 @@ Array of expressions are ANDed.
 | Field | Type | Description |
 | :--- | :--- | :--- |
 | interface | string | The uniquely identified name of the interface it requires. Equivalent to the following [MatchExpression](#matchexpression): `{"key":"interface", "operator":"In", "value":[interface]}` |
+| selector | array of [MatchExpression](#MatchExpression) | 
+| scope | enum (string) | `"runtime"` (default), `"deployment"`|
 | quantifier | string | `"1"` | `+` (zero or one), `*` (zero or more), `?` (one or more), `n` (exact `n` times) |
 | _matches_ | array | `[]` | (Output) Upon resolving/finding the `interface`, this field will contain an array of components matching the interface. |
 

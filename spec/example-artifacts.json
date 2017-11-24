@@ -11,27 +11,25 @@
     "deploymentSpec":{
       "host": {"selector":{"os.family":"SunOs", "os.version":"[10,11)", "reserved-for":"ofm11g"}, "quantifier":"+"}
     },
-    "runtimeSpec":{
-      "provides": [{
-          "name": "com.oracle.weblogic",
-          "version": "10.3.6",
-          "layer":"server"
-        },{
-          "name": "com.oracle.forms",
-          "version": "???",
-          "layer":"server"
-        },{
-          "name": "com.oracle.reports",
-          "version": "???",
-          "layer":"server"
-        },{
-          "name": "com.oracle.weblogic.admin",
-          "version": "10.3.6",
-          "layer":"server",
-          "attributes": ["url"]
-        }
-      ]
-    }
+    "provides": [{
+        "name": "com.oracle.weblogic",
+        "version": "10.3.6",
+        "layer":"server"
+      },{
+        "name": "com.oracle.forms",
+        "version": "???",
+        "layer":"server"
+      },{
+        "name": "com.oracle.reports",
+        "version": "???",
+        "layer":"server"
+      },{
+        "name": "com.oracle.weblogic.admin",
+        "version": "10.3.6",
+        "layer":"server",
+        "attributes": ["url"]
+      }
+    ]
   },{
     "system": "TITAN",
     "name": "ca.bc.gov.nrs.titan.nrs-titan-ds",
@@ -70,44 +68,57 @@
         {"selector":{"name":"com.oracle.weblogic.credential.deployer"}}
       ]
     },
-    "runtimeSpec":{
-      "provides": [{
-          "interface": "ca.bc.gov.nrs.titan.nrs-titan-rest-ear",
-          "layer":"server"
-        }
-      ],
-      "requires": [{
-          "interface": "ca.bc.gov.nrs.titan.nrs-titan-api-route",
-          "resolution": "optional"
-        }, {
-          "interface": "ca.bc.gov.nrs.titan.nrs-titan-ds",
-          "resolution": "mandatory",
-          "version": "1.0"
-        }
-      ]
+    "provides": [{
+        "interface": "ca.bc.gov.nrs.titan.nrs-titan-rest-ear",
+        "layer":"server"
+      }
+    ],
+    "requires": {
+      "api-route":{
+        "interface": "ca.bc.gov.nrs.titan.nrs-titan-api-route",
+        "resolution": "optional"
+      },
+      "dataSource":{
+        "interface": "ca.bc.gov.nrs.titan.nrs-titan-ds",
+        "resolution": "mandatory",
+        "version": "1.0"
+      },
+      "wladmin": {
+        "selector":{"name":"com.oracle.weblogic.admin", "version":"[10,11)"},
+        "quantifier":"+",
+        "expand":"url",
+        "scope": "deployment"
+      },
+      "deployer_credential":{
+        "selector":{"name":"com.oracle.weblogic.credential.deployer"}
+        "scope": "deployment"
+      }
     }
   },{
     "system": "TITAN",
     "name": "ca.bc.gov.nrs.titan.nrs-titan-ui",
     "version": "1.0.0",
-    "deploymentSpec":{
-      "host": {"selector":{"name":"com.oracle.weblogic.admin", "version":"[10,11)"}, "quantifier":"1+", "expand":"url"},
-      "credentials":[
-        {"selector":{"name":"com.oracle.weblogic.credential.deployer"}}
-      ]
+    "requires": {
+      "ui-route": {
+        "interface": "ca.bc.gov.nrs.titan.nrs-titan-ui-route",
+        "resolution": "optional",
+        "version": "*"
+      },
+      "wladmin": {
+        "selector":{"name":"com.oracle.weblogic.admin", "version":"[10,11)"},
+        "quantifier":"+",
+        "expand":"url",
+        "scope": "deployment"
+      },
+      "deployer_credential":{
+        "selector":{"name":"com.oracle.weblogic.credential.deployer"}
+        "scope": "deployment"
+      }
     },
-    "runtimeSpec":{
-      "provides": [{
-          "interface": "ca.bc.gov.nrs.titan.nrs-titan-ui",
-          "layer":"server"
-        }
-      ],
-      "requires": [{
-          "interface": "ca.bc.gov.nrs.titan.nrs-titan-ui-route",
-          "resolution": "optional",
-          "version": "*"
-        }
-      ]
-    }
+    "provides": [{
+        "interface": "ca.bc.gov.nrs.titan.nrs-titan-ui",
+         "layer":"server"
+      }
+    ]
   }
 ]
