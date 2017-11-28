@@ -1,0 +1,120 @@
+{
+    "$id": "http://nrs.gov.bc.ca/cmdb/artifacts",
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title": "Artifacts",
+    "description": "schema for defining an artifact deployment/runtime dependencies",
+    "type" : "object",
+    "properties": {
+        "artifacts" : {
+            "type" : "array",
+            "items" : {
+                "$ref" : "#/definitions/artifact"
+            }
+        }
+    },
+    "additionalProperties": false,
+    "definitions": {
+        "artifact": {
+            "type": "object",
+            "required": [ "system", "name", "requires", "provides" ],
+            "properties": {
+                "system": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "vendor": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                },
+                "provides" : {
+                    "type" : "array",
+                    "items" : {
+                        "$ref" : "#/definitions/provide"
+                    }
+                },
+                "requires" : {
+                    "type" : "object",
+                    "properties": {
+                        "itemType": {"$ref": "#/definitions/mapOfRequire"},
+                        "itemCount": {"$ref": "#/definitions/mapOfRequire"}
+                    },
+                    "additionalProperties": {"$ref": "#/definitions/require"}
+                }
+            },
+            "additionalProperties": false
+        },
+        "layer": {
+            "enum": [ "client", "server", "router" ]
+        },
+        "scope": {
+            "enum": [ "runtime", "deployment"]
+        },
+        "mapOfRequire": {
+            "type": "object",
+            "additionalProperties": {"$ref": "#/definitions/require"}
+        },
+        "matchExpression" : { 
+            "type" : "object",
+            "properties": {
+                "key": { "type": "string", "enum": [ "In", "NotIn"]},
+                "operator": { "type": "string"},
+                "values": { "type": "array"}
+            },
+            "additionalProperties": false
+        },
+        "selector" : { 
+            "type" : "object",
+            "properties": {
+                "expressions": { "$ref": "#/definitions/matchExpression"},
+                "quantifier": {
+                    "type": "string",
+                    "default":"1",
+                    "description": ""
+                }
+            },
+            "additionalProperties": false
+        },
+        "provide" : { 
+            "type" : "object",
+            "properties": {
+                "interface": { "type": "string"},
+                "version": { "type": "string"},
+                "layer": { "$ref": "#/definitions/layer"},
+                "attributes": { "type": "array"}
+            },
+            "required": [ "interface", "layer" ],
+            "additionalProperties": false
+        },
+        "require" : { 
+            "oneOf" : [{
+                "properties": {
+                    "selector": { "$ref": "#/definitions/selector"},
+                    "scope": { "$ref": "#/definitions/scope"},
+                    "quantifier": { "type": "string"},
+                    "resolution": { "type": "string"},
+                    "expand": { "type": "array"}
+                },
+                "additionalProperties": false,
+                "required": [ "selector"]
+            },{
+                "properties": {
+                    "scope": { "$ref": "#/definitions/scope"},
+                    "quantifier": { "type": "string"},
+                    "resolution": { "type": "string"},
+                    "interface": { "type": "string"},
+                    "version": { "type": "string"},
+                    "expand": { "type": "array"}
+                },
+                "additionalProperties": false,
+                "required": [ "interface", "version"]
+            }]
+        }
+    }
+}
