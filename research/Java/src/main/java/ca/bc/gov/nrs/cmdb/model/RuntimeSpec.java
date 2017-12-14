@@ -27,7 +27,7 @@ public class RuntimeSpec {
     this.key = key;
   }
 
-  
+
 
   @Override
   public boolean equals(Object o) {

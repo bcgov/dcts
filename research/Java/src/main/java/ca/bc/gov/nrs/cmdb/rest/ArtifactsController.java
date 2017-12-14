@@ -6,6 +6,8 @@
 package ca.bc.gov.nrs.cmdb.rest;
 
 import ca.bc.gov.nrs.cmdb.model.Artifact;
+import ca.bc.gov.nrs.cmdb.model.RequirementSpec;
+import ca.bc.gov.nrs.cmdb.model.SelectorSpec;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.tinkerpop.blueprints.Vertex;
@@ -15,6 +17,7 @@ import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -26,7 +29,8 @@ import java.util.UUID;
 @RequestMapping("/artifacts")
 
 public class ArtifactsController {
-    
+    private String defaultName = "com.oracle.ofm";
+
     private static Gson gson;
 
     @Autowired
@@ -38,6 +42,22 @@ public class ArtifactsController {
      * @return
      */
 
+    @RequestMapping("/resetTemplate")
+    public String ResetTemplate()
+    {
+        OrientGraphNoTx graph =  factory.getNoTx();
+        OrientVertex vArtifact = null;
+        Artifact artifact = new Artifact();
+        Iterable<Vertex> Artifacts = graph.getVertices("Artifact.name", defaultName);
+        if (Artifacts != null && Artifacts.iterator().hasNext())
+        {
+            vArtifact = (OrientVertex) Artifacts.iterator().next();
+            graph.removeVertex(vArtifact);
+        }
+        graph.shutdown();
+        return "ok";
+    }
+
     @RequestMapping("/getTemplate")
     public String GetTemplate()
     {
@@ -48,7 +68,7 @@ public class ArtifactsController {
         OrientVertex vArtifact = null;
         Artifact artifact = new Artifact();
 
-        String defaultName = "com.oracle.ofm";
+
 
         if (graph.getVertexType("Artifact") == null)
         {
@@ -61,6 +81,45 @@ public class ArtifactsController {
             vArtifact = (OrientVertex) Artifacts.iterator().next();
             artifact.setKey((String)vArtifact.getProperty("key"));
             artifact.setName((String)vArtifact.getProperty("name"));
+            artifact.setSystem((String)vArtifact.getProperty("system"));
+            artifact.setShortName((String)vArtifact.getProperty("shortName"));
+            artifact.setDescription((String)vArtifact.getProperty("description"));
+            artifact.setUrl((String)vArtifact.getProperty("url"));
+            artifact.setVendor((String)vArtifact.getProperty("vendor"));
+            artifact.setVendorContact((String)vArtifact.getProperty("vendorContact"));
+            artifact.setVersion((String)vArtifact.getProperty("version"));
+
+            // construct the requires.
+
+            SelectorSpec selector = new SelectorSpec();
+            selector.setName("com.oracle.weblogic.admin");
+            selector.setVersion("[10,11)" );
+
+
+            RequirementSpec host = new RequirementSpec();
+
+            host.setSelector(selector);
+            host.setQuantifier("?");
+            host.setScope("deployment");
+            String [] expandArray = new String[1];
+            expandArray[0]="url";
+            host.setExpand(expandArray);
+
+            RequirementSpec credential = new RequirementSpec();
+
+            SelectorSpec credentialSelector = new SelectorSpec();
+            credentialSelector.setName ("com.oracle.weblogic.credential.deployer");
+
+            credential.setSelector(credentialSelector);
+            credential.setQuantifier("?");
+            credential.setScope("deployment");
+
+            HashMap<String, Object> requiresHash = new HashMap<String, Object>();
+
+            requiresHash.put ("host", host);
+            requiresHash.put ("deployer_credential", credential);
+            artifact.setRequires(requiresHash);
+
         }
         else // create the demo item.
         {
@@ -76,17 +135,34 @@ public class ArtifactsController {
             artifact.setVersion("11.1.1");
 
 
+            // create a requirement.
+
+            RequirementSpec requirementSpec = new RequirementSpec();
+            requirementSpec.setQuantifier("?");
+
+            String[] expand = new String[1];
+
+            requirementSpec.setScope("deployment");
+
             // create the item in the graph database.
             vArtifact = graph.addVertex("class:Artifact");
             vArtifact.setProperty("key", artifact.getKey());
             vArtifact.setProperty("name", artifact.getName());
             vArtifact.setProperty("system",artifact.getSystem());
             vArtifact.setProperty("shortName",artifact.getShortName());
-            vArtifact.setProperty("description",artifact);
-            vArtifact.setProperty("url",artifact);
-            vArtifact.setProperty("vendor",artifact);
-            vArtifact.setProperty("vendorContact",artifact);
-            vArtifact.setProperty("version",artifact);
+            vArtifact.setProperty("description",artifact.getDescription());
+            vArtifact.setProperty("url",artifact.getUrl());
+            vArtifact.setProperty("vendor",artifact.getVendor());
+            vArtifact.setProperty("vendorContact",artifact.getVendorContact());
+            vArtifact.setProperty("version",artifact.getVersion());
+
+            String json = gson.toJson(artifact.getRequires());
+
+            vArtifact.setProperty("requires", json);
+
+            json = gson.toJson(artifact.getProvides());
+
+            vArtifact.setProperty("provides", json);
 
 
 
