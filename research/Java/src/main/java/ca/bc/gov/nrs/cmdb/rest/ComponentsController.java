@@ -15,6 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static ca.bc.gov.nrs.cmdb.GraphTools.CreateEdgeIfNotExists;
+import static ca.bc.gov.nrs.cmdb.GraphTools.CreateVertexIfNotExists;
+import static ca.bc.gov.nrs.cmdb.GraphTools.CreateVertexTypeIfNotExists;
+
 /**
  *
  * @author George
@@ -31,40 +35,6 @@ public class ComponentsController {
     private OrientGraphFactory factory;
 
 
-    void CreateVertexTypeIfNotExists(OrientGraphNoTx graph, String name)
-    {
-        if (graph.getVertexType(name) == null)
-        {
-            graph.createVertexType(name);
-        }
-    }
-
-    OrientVertex CreateVertexIfNotExists(OrientGraphNoTx graph, String vertexType, String key)
-    {
-        OrientVertex result = null;
-        // lookup the Component.
-        Iterable<Vertex> Components = graph.getVertices(vertexType + ".key", key);
-        if (Components != null && Components.iterator().hasNext())
-        {
-            result = (OrientVertex) Components.iterator().next();
-        }
-        else
-        {
-            result = graph.addVertex("class:" + vertexType);
-            result.setProperty("key", key);
-        }
-        return result;
-    }
-
-
-    void CreateEdgeIfNotExists (OrientGraphNoTx graph, OrientVertex vSource, OrientVertex vDestination, String edgeLabel)
-    {
-        // ensure there is an edge between the ExecutionEnvironment and the property.
-        Iterable<com.tinkerpop.blueprints.Edge> edges = vSource.getEdges( vDestination, Direction.BOTH, edgeLabel);
-        if (edges == null || ! edges.iterator().hasNext()) {
-            graph.addEdge(null, vSource, vDestination, edgeLabel);
-        }
-    }
 
 
     /***

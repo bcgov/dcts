@@ -123,21 +123,21 @@ public class Artifact {
   }
 
 
-  private Export[] provides = null;
+  private HashMap<String, RequirementSpec> provides = null;
   @JsonProperty("Provides")
-  public Export[] getProvides() {
+  public HashMap<String, RequirementSpec>  getProvides() {
     return provides;
   }
-  public void setProvides(Export[] provides) {
+  public void setProvides(HashMap<String, RequirementSpec>  provides) {
     this.provides = provides;
   }
 
-  private HashMap<String, Object> requires = null;
+  private HashMap<String, RequirementSpec> requires = null;
   @JsonProperty("Requires")
-  public HashMap<String, Object>  getRequires() {
+  public HashMap<String, RequirementSpec>  getRequires() {
     return requires;
   }
-  public void setRequires (HashMap<String, Object>  requires) {
+  public void setRequires (HashMap<String, RequirementSpec>  requires) {
     this.requires = requires;
   }
 

@@ -3,6 +3,7 @@ package ca.bc.gov.nrs.cmdb.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 
+import java.util.HashMap;
 import java.util.Objects;
 
 /**
@@ -20,7 +21,7 @@ public class Host {
 
   private String version = null;
 
-  private String labels = null;
+
 
   public Host key(String key) {
     this.key = key;
@@ -36,7 +37,7 @@ public class Host {
   }
 
   /**
-   * The name of the Artifact
+   * The name of the Host
    **/
   public Host name(String name) {
     this.name = name;
@@ -69,12 +70,13 @@ public class Host {
   /**
    * The labels of the Host
    **/
+  private HashMap<String, String> labels = null;
 
   @JsonProperty("labels")
-  public String getLabels() {
+  public HashMap<String, String>  getLabels() {
     return labels;
   }
-  public void setLabels(String labels) {
+  public void setLabels(HashMap<String, String>  labels) {
     this.labels = labels;
   }
 

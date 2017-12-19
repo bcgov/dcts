@@ -7,6 +7,7 @@ package ca.bc.gov.nrs.cmdb.rest;
 
 import ca.bc.gov.nrs.cmdb.model.Artifact;
 import ca.bc.gov.nrs.cmdb.model.DeploymentSpecificationPlan;
+import ca.bc.gov.nrs.cmdb.model.RequirementSpec;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.tinkerpop.blueprints.Direction;
@@ -26,6 +27,7 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -93,6 +95,11 @@ public class DeploymentsController {
     }
 
 
+    Boolean HaveRequirement (String requirementKey, RequirementSpec requirementSpec)
+    {
+        return false;
+    }
+
     /***
      * Get a new deployment specification plan.
      * @return
@@ -101,57 +108,89 @@ public class DeploymentsController {
 
     public ResponseEntity<String> StartDeployment(@RequestBody Artifact input)
     {
-        // setup the new deployment specification plan.
-        DeploymentSpecificationPlan deploymentSpecificationPlan = new DeploymentSpecificationPlan();
+        String result = null;
+        // before we setup the deployment specification plan, check to see if we meet the requirements.
 
-        deploymentSpecificationPlan.setKey(UUID.randomUUID().toString());
+        HashMap<String, RequirementSpec> requiresHash = input.getRequires();
 
-        DateFormat dateFormat = new SimpleDateFormat("yy/mm/dd-hh:mm");
-        Calendar cal = Calendar.getInstance();
+        Boolean haveRequirements = true;
 
-        deploymentSpecificationPlan.setName("New Deployment Specification Plan " + dateFormat.format(cal.getTime()));
-        deploymentSpecificationPlan.setArtifact(input);
-
-        OrientGraphNoTx graph =  factory.getNoTx();
-
-
-        if (graph.getVertexType("DeploymentSpecificationPlan") == null)
+        for (String requirementKey : requiresHash.keySet())
         {
-            graph.createVertexType("DeploymentSpecificationPlan");
+            Object o = requiresHash.get(requirementKey);
+
+            /*
+            RequirementSpec requirementSpec = (RequirementSpec) o;
+
+            // determine if we have a match for the requirement spec.
+            if (! HaveRequirement (requirementKey, requirementSpec))
+            {
+                haveRequirements = false;
+            }
+            */
+            haveRequirements = false;
         }
 
-        OrientVertex vDeploymentSpecificationPlan = graph.addVertex("class:DeploymentSpecificationPlan" );
-        vDeploymentSpecificationPlan.setProperty("key", deploymentSpecificationPlan.getKey());
-        vDeploymentSpecificationPlan.setProperty("name", deploymentSpecificationPlan.getName());
-
-        // get the Artifact.
-
-        OrientVertex vArtifact = null;
-        Iterable<Vertex> Artifacts = graph.getVertices("Artifact.key", input.getKey());
-        if (Artifacts != null && Artifacts.iterator().hasNext())
+        if (haveRequirements)
         {
-            vArtifact = (OrientVertex) Artifacts.iterator().next();
-            // Add an edge to the Artifact.
+            // setup the new deployment specification plan.
+            DeploymentSpecificationPlan deploymentSpecificationPlan = new DeploymentSpecificationPlan();
 
-            Iterable<com.tinkerpop.blueprints.Edge> edges = vDeploymentSpecificationPlan.getEdges( vArtifact, Direction.BOTH, "Deploys");
-            if (edges == null || ! edges.iterator().hasNext()) {
-                graph.addEdge(null, vDeploymentSpecificationPlan, vArtifact, "Deploys");
+            deploymentSpecificationPlan.setKey(UUID.randomUUID().toString());
+
+            DateFormat dateFormat = new SimpleDateFormat("yy/mm/dd-hh:mm");
+            Calendar cal = Calendar.getInstance();
+
+            deploymentSpecificationPlan.setName("New Deployment Specification Plan " + dateFormat.format(cal.getTime()));
+            deploymentSpecificationPlan.setArtifact(input);
+
+            OrientGraphNoTx graph =  factory.getNoTx();
+
+
+            if (graph.getVertexType("DeploymentSpecificationPlan") == null)
+            {
+                graph.createVertexType("DeploymentSpecificationPlan");
+            }
+
+            OrientVertex vDeploymentSpecificationPlan = graph.addVertex("class:DeploymentSpecificationPlan" );
+            vDeploymentSpecificationPlan.setProperty("key", deploymentSpecificationPlan.getKey());
+            vDeploymentSpecificationPlan.setProperty("name", deploymentSpecificationPlan.getName());
+
+            // get the Artifact.
+
+            OrientVertex vArtifact = null;
+            Iterable<Vertex> Artifacts = graph.getVertices("Artifact.key", input.getKey());
+            if (Artifacts != null && Artifacts.iterator().hasNext())
+            {
+                vArtifact = (OrientVertex) Artifacts.iterator().next();
+                // Add an edge to the Artifact.
+
+                Iterable<com.tinkerpop.blueprints.Edge> edges = vDeploymentSpecificationPlan.getEdges( vArtifact, Direction.BOTH, "Deploys");
+                if (edges == null || ! edges.iterator().hasNext()) {
+                    graph.addEdge(null, vDeploymentSpecificationPlan, vArtifact, "Deploys");
+                }
+            }
+
+
+            // done with the graph
+            graph.shutdown();
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            try {
+                result = mapper.writeValueAsString(deploymentSpecificationPlan);
+            }
+            catch (Exception e)
+            {
+                result = "ERROR" + e.toString();
             }
         }
-
-
-        // done with the graph
-        graph.shutdown();
-
-        ObjectMapper mapper = new ObjectMapper();
-        String result = null;
-        try {
-            result = mapper.writeValueAsString(deploymentSpecificationPlan);
-        }
-        catch (Exception e)
+        else
         {
-            result = "ERROR" + e.toString();
+            result = "ERROR - Requirements not met.";
         }
+
+
 
         // return the result
         final HttpHeaders httpHeaders= new HttpHeaders();

@@ -71,8 +71,6 @@ public class RequirementSpec {
 
 
 
-
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -86,9 +84,17 @@ public class RequirementSpec {
         Objects.equals(version, selector.version) ;
   }
 
+
+
   @Override
   public int hashCode() {
-    return Objects.hash(quantifier, version);
+    return Objects.hash(quantifier, version, scope, resolution);
+  }
+
+
+  public String getKey (String keyType)
+  {
+    return keyType + ((Integer)hashCode()).toString();
   }
 
   @Override

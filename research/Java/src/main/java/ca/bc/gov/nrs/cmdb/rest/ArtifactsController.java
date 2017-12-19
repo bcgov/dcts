@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.UUID;
-
+import static ca.bc.gov.nrs.cmdb.GraphTools.CreateEdgeIfNotExists;
+import static ca.bc.gov.nrs.cmdb.GraphTools.CreateVertexIfNotExists;
+import static ca.bc.gov.nrs.cmdb.GraphTools.CreateVertexTypeIfNotExists;
 /**
  *
  * @author George
@@ -41,6 +43,34 @@ public class ArtifactsController {
      * Get an artifact template.
      * @return
      */
+
+
+    private void updatedRequirements(OrientGraphNoTx graph, String edgeName, OrientVertex vArtifact, HashMap<String, RequirementSpec> requirementHash)
+    {
+        if (requirementHash != null)
+        {
+            // start by verifying that the RequirementSpec exists.
+            CreateVertexTypeIfNotExists( graph, "RequirementSpec");
+
+            for (String requirementType : requirementHash.keySet())
+            {
+                RequirementSpec requirementSpec = requirementHash.get(requirementType);
+                OrientVertex vRequirementSpec = CreateVertexIfNotExists (graph, "RequirementSpec", requirementSpec.getKey(requirementType));
+                // Set properties.
+                vRequirementSpec.setProperty("selector", requirementSpec.getSelector());
+                vRequirementSpec.setProperty("quantifier", requirementSpec.getQuantifier());
+                vRequirementSpec.setProperty("scope", requirementSpec.getScope());
+                vRequirementSpec.setProperty("version", requirementSpec.getVersion());
+
+                // add the expand vector.
+
+                // create an edge.
+                CreateEdgeIfNotExists(graph,vArtifact,vRequirementSpec, edgeName);
+            }
+        }
+
+
+    }
 
     @RequestMapping("/resetTemplate")
     public String ResetTemplate()
@@ -114,7 +144,7 @@ public class ArtifactsController {
             credential.setQuantifier("?");
             credential.setScope("deployment");
 
-            HashMap<String, Object> requiresHash = new HashMap<String, Object>();
+            HashMap<String, RequirementSpec>  requiresHash = new HashMap<String, RequirementSpec> ();
 
             requiresHash.put ("host", host);
             requiresHash.put ("deployer_credential", credential);
@@ -156,16 +186,10 @@ public class ArtifactsController {
             vArtifact.setProperty("vendorContact",artifact.getVendorContact());
             vArtifact.setProperty("version",artifact.getVersion());
 
-            String json = gson.toJson(artifact.getRequires());
+            /* requires and provides are stored as related vertexes with edges.  */
 
-            vArtifact.setProperty("requires", json);
-
-            json = gson.toJson(artifact.getProvides());
-
-            vArtifact.setProperty("provides", json);
-
-
-
+            updatedRequirements (graph, "Requires", vArtifact, artifact.getRequires());
+            updatedRequirements (graph, "Provides", vArtifact, artifact.getProvides());
 
         }
 
