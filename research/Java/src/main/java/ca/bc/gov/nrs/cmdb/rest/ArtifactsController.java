@@ -10,11 +10,15 @@ import ca.bc.gov.nrs.cmdb.model.RequirementSpec;
 import ca.bc.gov.nrs.cmdb.model.SelectorSpec;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.orientechnologies.orient.core.command.OCommandRequest;
+import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.impls.orient.OrientGraphCommand;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -45,6 +49,7 @@ public class ArtifactsController {
      */
 
 
+
     private void updatedRequirements(OrientGraphNoTx graph, String edgeName, OrientVertex vArtifact, HashMap<String, RequirementSpec> requirementHash)
     {
         if (requirementHash != null)
@@ -57,10 +62,11 @@ public class ArtifactsController {
                 RequirementSpec requirementSpec = requirementHash.get(requirementType);
                 OrientVertex vRequirementSpec = CreateVertexIfNotExists (graph, "RequirementSpec", requirementSpec.getKey(requirementType));
                 // Set properties.
-                vRequirementSpec.setProperty("selector", requirementSpec.getSelector());
+
                 vRequirementSpec.setProperty("quantifier", requirementSpec.getQuantifier());
                 vRequirementSpec.setProperty("scope", requirementSpec.getScope());
-                vRequirementSpec.setProperty("version", requirementSpec.getVersion());
+
+                safeVertexPropertySet(vRequirementSpec, "version", requirementSpec.getVersion());
 
                 // add the expand vector.
 
@@ -68,8 +74,38 @@ public class ArtifactsController {
                 CreateEdgeIfNotExists(graph,vArtifact,vRequirementSpec, edgeName);
             }
         }
+    }
+
+    private void safeVertexPropertySet (OrientVertex vertex, String propertyName, String propertyValue)
+    {
+        if (propertyValue != null)
+        {
+            vertex.setProperty(propertyName, propertyValue);
+        }
+    }
+
+    private OrientVertex CreateArtifactVertex (OrientGraphNoTx graph, Artifact artifact)
+    {
+        // create the item in the graph database.
+        OrientVertex vArtifact = graph.addVertex("class:Artifact");
+        vArtifact.setProperty("key", artifact.getKey());
+        vArtifact.setProperty("name", artifact.getName());
+        safeVertexPropertySet(vArtifact, "system",artifact.getSystem());
 
 
+        safeVertexPropertySet(vArtifact,"shortName",artifact.getShortName());
+        safeVertexPropertySet(vArtifact,"description",artifact.getDescription());
+        safeVertexPropertySet(vArtifact,"url",artifact.getUrl());
+        safeVertexPropertySet(vArtifact,"vendor",artifact.getVendor());
+        safeVertexPropertySet(vArtifact,"vendorContact",artifact.getVendorContact());
+        safeVertexPropertySet(vArtifact,"version",artifact.getVersion());
+
+        /* requires and provides are stored as related vertexes with edges.  */
+
+        updatedRequirements (graph, "Requires", vArtifact, artifact.getRequires());
+        updatedRequirements (graph, "Provides", vArtifact, artifact.getProvides());
+
+        return vArtifact;
     }
 
     @RequestMapping("/resetTemplate")
@@ -128,7 +164,7 @@ public class ArtifactsController {
 
             RequirementSpec host = new RequirementSpec();
 
-            host.setSelector(selector);
+
             host.setQuantifier("?");
             host.setScope("deployment");
             String [] expandArray = new String[1];
@@ -140,7 +176,7 @@ public class ArtifactsController {
             SelectorSpec credentialSelector = new SelectorSpec();
             credentialSelector.setName ("com.oracle.weblogic.credential.deployer");
 
-            credential.setSelector(credentialSelector);
+
             credential.setQuantifier("?");
             credential.setScope("deployment");
 
@@ -174,23 +210,8 @@ public class ArtifactsController {
 
             requirementSpec.setScope("deployment");
 
-            // create the item in the graph database.
-            vArtifact = graph.addVertex("class:Artifact");
-            vArtifact.setProperty("key", artifact.getKey());
-            vArtifact.setProperty("name", artifact.getName());
-            vArtifact.setProperty("system",artifact.getSystem());
-            vArtifact.setProperty("shortName",artifact.getShortName());
-            vArtifact.setProperty("description",artifact.getDescription());
-            vArtifact.setProperty("url",artifact.getUrl());
-            vArtifact.setProperty("vendor",artifact.getVendor());
-            vArtifact.setProperty("vendorContact",artifact.getVendorContact());
-            vArtifact.setProperty("version",artifact.getVersion());
-
-            /* requires and provides are stored as related vertexes with edges.  */
-
-            updatedRequirements (graph, "Requires", vArtifact, artifact.getRequires());
-            updatedRequirements (graph, "Provides", vArtifact, artifact.getProvides());
-
+            // create the vertex.
+            CreateArtifactVertex (graph, artifact);
         }
 
         graph.shutdown();
@@ -207,6 +228,135 @@ public class ArtifactsController {
             result = "ERROR" + e.toString();
         }
         return result;
+    }
+
+    @RequestMapping("/getDemoArtifact")
+    public String GetDemoUpload()
+    {
+        gson = new Gson();
+
+
+        OrientGraphNoTx graph =  factory.getNoTx();
+        OrientVertex vArtifact = null;
+        Artifact artifact = new Artifact();
+
+
+
+        // create the view model
+        artifact.setKey(UUID.randomUUID().toString());
+        artifact.setName("BEAVERTON");
+        artifact.setVersion("11.1.1");
+
+            // create a requirement.
+
+            RequirementSpec requirementSpec = new RequirementSpec();
+            requirementSpec.setQuantifier("?");
+
+            String[] expand = new String[1];
+
+            requirementSpec.setScope("deployment");
+
+        // construct the requires.
+
+        SelectorSpec selector = new SelectorSpec();
+        selector.setName("com.oracle.weblogic.admin");
+        selector.setVersion("[10,11)" );
+
+
+        RequirementSpec host = new RequirementSpec();
+
+
+        host.setQuantifier("?");
+        host.setScope("deployment");
+        String [] expandArray = new String[1];
+        expandArray[0]="url";
+        host.setExpand(expandArray);
+
+        RequirementSpec credential = new RequirementSpec();
+
+        SelectorSpec credentialSelector = new SelectorSpec();
+        credentialSelector.setName ("com.oracle.weblogic.credential.deployer");
+
+
+        credential.setQuantifier("?");
+        credential.setScope("deployment");
+
+        HashMap<String, RequirementSpec>  requiresHash = new HashMap<String, RequirementSpec> ();
+
+        requiresHash.put ("host", host);
+        requiresHash.put ("deployer_credential", credential);
+        artifact.setProvides(requiresHash);
+
+
+        // return the result
+        //return result.toJson();//gson.toJson(result);
+        ObjectMapper mapper = new ObjectMapper();
+        String result = null;
+        try {
+            result = mapper.writeValueAsString(artifact);
+        }
+        catch (Exception e)
+        {
+            result = "\"ERROR" + e.toString() + "\"";
+        }
+        return result;
+
+
+
+        }
+
+
+        @PostMapping
+    public String CreateArtifact(@RequestBody Artifact artifact)
+    {
+        OrientGraphNoTx graph =  factory.getNoTx();
+        CreateArtifactVertex (graph, artifact);
+        graph.shutdown();
+        ObjectMapper mapper = new ObjectMapper();
+        String result = "";
+        try {
+            result = mapper.writeValueAsString(artifact);
+        }
+        catch (Exception e)
+        {
+            result = "\"ERROR" + e.toString() + "\"";
+        }
+        return result;
+    }
+
+
+    @RequestMapping("/resetArtifacts")
+    public String ResetArtifacts()
+    {
+        String result = "";
+
+        OrientGraphNoTx graph =  factory.getNoTx();
+        OrientVertex vArtifact = null;
+        try {
+
+            OCommandRequest command = graph.command( new OCommandSQL( "DELETE Vertex Artifact"));
+            command.execute();
+            command = graph.command( new OCommandSQL( "DELETE Vertex RequirementSpec"));
+            command.execute();
+            result = "\"Artifacts cleared.\"";
+        }
+        catch (Exception e)
+        {
+            result = "\"ERROR" + e.toString() + "\"";
+        }
+
+        /*
+
+        Iterable<Vertex> Artifacts = graph.getVerticesOfClass("Artifact");
+        if (Artifacts != null && Artifacts.iterator().hasNext())
+        {
+            vArtifact = (OrientVertex) Artifacts.iterator().next();
+            graph.removeVertex(vArtifact);
+        }
+        */
+        graph.shutdown();
+        return result;
+
     }
 
 }

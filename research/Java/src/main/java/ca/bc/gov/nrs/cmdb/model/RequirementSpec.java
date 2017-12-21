@@ -17,14 +17,6 @@ public class RequirementSpec {
 
 //  @Property("module_name")
 
-
-
-  private SelectorSpec selector = null;
-
-  @JsonProperty("selector")
-  public SelectorSpec getSelector() { return selector; }
-  public void setSelector( SelectorSpec selector ) {this.selector = selector; }
-
   private String quantifier = null;
 
   @JsonProperty("quantifier")

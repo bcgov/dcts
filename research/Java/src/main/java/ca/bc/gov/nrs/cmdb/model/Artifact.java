@@ -124,7 +124,7 @@ public class Artifact {
 
 
   private HashMap<String, RequirementSpec> provides = null;
-  @JsonProperty("Provides")
+  @JsonProperty("provides")
   public HashMap<String, RequirementSpec>  getProvides() {
     return provides;
   }
@@ -133,7 +133,7 @@ public class Artifact {
   }
 
   private HashMap<String, RequirementSpec> requires = null;
-  @JsonProperty("Requires")
+  @JsonProperty("requires")
   public HashMap<String, RequirementSpec>  getRequires() {
     return requires;
   }

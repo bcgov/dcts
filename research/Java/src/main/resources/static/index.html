@@ -11,10 +11,34 @@
 
 $(function() {
 
-    // get the example content.
-    $.get( "artifacts/getTemplate", function( data ) {
-        $( "#artifact" ).html( data );
+$('#getDemoArtifact').click(function() {
+        // get the demo content.
+    $.get( "artifacts/getDemoArtifact", "", function( data ) {
+    var formatted = JSON.stringify(data, undefined, 2);
+        $( "#artifactUpload" ).html( formatted );
+    }, 'json');
+
     });
+
+$('#clearAllArtifacts').click(function() {
+    // clear all artifacts
+    $("#outputArtifactUpload").html( "Clearing artifacts\n" );
+
+    $.get( "artifacts/resetArtifacts", "", function( data ) {
+
+        var dataAsString = JSON.stringify(data, undefined, 2);
+        var output = $("#outputArtifactUpload").text() + "Success!\nResponse:\n" + dataAsString;
+        $("#outputArtifactUpload").html( output );
+
+    }, 'json');
+
+    });
+
+    // get the example content.
+    $.get( "artifacts/getTemplate", "", function( data ) {
+    var formatted = JSON.stringify(data, undefined, 2);
+        $( "#artifact" ).html( formatted );
+    }, 'json');
 
     // deployment start
     $("#deploymentStartForm").submit(function(e) {
@@ -33,13 +57,43 @@ $(function() {
                 contentType: 'application/json',
                 data: $("#artifact").text(),
                 success: function(data) {
-                    var dataAsString = JSON.stringify(data);
+                    var dataAsString = JSON.stringify(data, undefined, 2);
                     var output = $("#outputStart").text() + "Success!\nResponse:\n" + dataAsString;
                     $("#outputStart").html( output );
 
                     // set the deployment key
                     $("#deploymentId").val(data.key);
                     $("#deploymentSpec").html(dataAsString);
+                },
+                error: function (xhr, textStatus, thrownError) {
+                    var output = $("#outputStart").text() + "ERROR!\nResponse:\n" + textStatus + "\n" + thrownError;
+                    $("#outputStart").html( output );
+
+                }
+        });
+    });
+
+    // artifactUpload
+    $("#artifactUploadForm").submit(function(e) {
+        //prevent Default functionality
+        e.preventDefault();
+
+        //get the action-url of the form
+        var actionurl = e.currentTarget.action;
+
+        $("#outputArtifactUpload").html( 'Sending POST request to ' + actionurl + "\n" );
+
+        $.ajax({
+                url: actionurl,
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: $("#artifactUpload").text(),
+                success: function(data) {
+                    var dataAsString = JSON.stringify(data, undefined, 2);
+                    var output = $("#outputArtifactUpload").text() + "Success!\nResponse:\n" + dataAsString;
+                    $("#outputArtifactUpload").html( output );
+
                 },
                 error: function (xhr, textStatus, thrownError) {
                     var output = $("#outputStart").text() + "ERROR!\nResponse:\n" + textStatus + "\n" + thrownError;
@@ -68,9 +122,9 @@ $(function() {
                 type: 'post',
                 dataType: 'json',
                 contentType: 'application/json',
-                data: $("#artifact").text(),
+                data: $("#artifactUpload").text(),
                 success: function(data) {
-                    var dataAsString = JSON.stringify(data);
+                    var dataAsString = JSON.stringify(data, undefined, 2);
                     var output = $("#outputFinish").text() + "Success!\nResponse:\n" + dataAsString;
                     $("#outputFinish").html( output );
 
@@ -112,6 +166,27 @@ $(function() {
 
 
 <hr/>
+
+<h2>Upload Data</h2>
+<form id="artifactUploadForm" method="post" action="artifacts">
+    <table border="0">
+        <td>
+            <h4>Requirement JSON:</h4>
+
+            <textarea id="artifactUpload" rows="20" cols="80" name="requirement"></textarea>
+        </td>
+        <td>
+            <h4>Output:</h4>
+            <textarea id="outputArtifactUpload" rows="20" cols="80" name="outputArtifactUpload"></textarea><br>
+
+        </td>
+    </table>
+    <input type="submit" value="Upload Data">
+    <input type="button" id="getDemoArtifact" value="Get Demo Data">
+    <input type="button" id="clearAllArtifacts" value="Clear All Artifacts">
+</form>
+<hr/>
+
 
 <h2>Deployment Finish</h2>
 

@@ -30,6 +30,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.UUID;
 
+import static ca.bc.gov.nrs.cmdb.GraphTools.*;
+
 /**
  *
  * @author George
@@ -46,59 +48,7 @@ public class DeploymentsController {
     private OrientGraphFactory factory;
 
 
-    void CreateVertexTypeIfNotExists(OrientGraphNoTx graph, String name)
-    {
-        if (graph.getVertexType(name) == null)
-        {
-            graph.createVertexType(name);
-        }
-    }
 
-    OrientVertex CreateVertexIfNotExists(OrientGraphNoTx graph, String vertexType, String key)
-    {
-        OrientVertex result = null;
-        // lookup the Component.
-        Iterable<Vertex> Components = graph.getVertices(vertexType + ".key", key);
-        if (Components != null && Components.iterator().hasNext())
-        {
-            result = (OrientVertex) Components.iterator().next();
-        }
-        else
-        {
-            result = graph.addVertex("class:" + vertexType);
-            result.setProperty("key", key);
-        }
-        return result;
-    }
-
-    OrientVertex GetVertex(OrientGraphNoTx graph, String vertexType, String key)
-    {
-        OrientVertex result = null;
-        // lookup the Component.
-        Iterable<Vertex> Components = graph.getVertices(vertexType + ".key", key);
-        if (Components != null && Components.iterator().hasNext())
-        {
-            result = (OrientVertex) Components.iterator().next();
-        }
-        return result;
-    }
-
-
-
-    void CreateEdgeIfNotExists (OrientGraphNoTx graph, OrientVertex vSource, OrientVertex vDestination, String edgeLabel)
-    {
-        // ensure there is an edge between the ExecutionEnvironment and the property.
-        Iterable<com.tinkerpop.blueprints.Edge> edges = vSource.getEdges( vDestination, Direction.BOTH, edgeLabel);
-        if (edges == null || ! edges.iterator().hasNext()) {
-            graph.addEdge(null, vSource, vDestination, edgeLabel);
-        }
-    }
-
-
-    Boolean HaveRequirement (String requirementKey, RequirementSpec requirementSpec)
-    {
-        return false;
-    }
 
     /***
      * Get a new deployment specification plan.
@@ -108,27 +58,25 @@ public class DeploymentsController {
 
     public ResponseEntity<String> StartDeployment(@RequestBody Artifact input)
     {
+        OrientGraphNoTx graph =  factory.getNoTx();
+
         String result = null;
         // before we setup the deployment specification plan, check to see if we meet the requirements.
 
         HashMap<String, RequirementSpec> requiresHash = input.getRequires();
 
-        Boolean haveRequirements = true;
+        Boolean haveRequirements = false;
 
         for (String requirementKey : requiresHash.keySet())
         {
-            Object o = requiresHash.get(requirementKey);
-
-            /*
-            RequirementSpec requirementSpec = (RequirementSpec) o;
+            RequirementSpec requirementSpec = requiresHash.get(requirementKey);
 
             // determine if we have a match for the requirement spec.
-            if (! HaveRequirement (requirementKey, requirementSpec))
+            if (HaveRequirement (graph, requirementKey, requirementSpec))
             {
-                haveRequirements = false;
+                haveRequirements = true;
             }
-            */
-            haveRequirements = false;
+
         }
 
         if (haveRequirements)
@@ -144,7 +92,7 @@ public class DeploymentsController {
             deploymentSpecificationPlan.setName("New Deployment Specification Plan " + dateFormat.format(cal.getTime()));
             deploymentSpecificationPlan.setArtifact(input);
 
-            OrientGraphNoTx graph =  factory.getNoTx();
+
 
 
             if (graph.getVertexType("DeploymentSpecificationPlan") == null)
@@ -182,12 +130,12 @@ public class DeploymentsController {
             }
             catch (Exception e)
             {
-                result = "ERROR" + e.toString();
+                result = "\"ERROR" + e.toString() + "\"";
             }
         }
         else
         {
-            result = "ERROR - Requirements not met.";
+            result = "\"ERROR - Requirements not met.\"";
         }
 
 
@@ -221,7 +169,7 @@ public class DeploymentsController {
             if (deploymentSpecificationPlan.getSystem() != null) { vDeploymentSpecificationPlan.setProperty("Description", deploymentSpecificationPlan.getDescription()); }
             if (deploymentSpecificationPlan.getSystem() != null) { vDeploymentSpecificationPlan.setProperty("Vendor", deploymentSpecificationPlan.getVendor()); }
             if (deploymentSpecificationPlan.getSystem() != null) { vDeploymentSpecificationPlan.setProperty("Vendor-Contact", deploymentSpecificationPlan.getVendorContact()); }
-            if (deploymentSpecificationPlan.getSystem() != null) { vDeploymentSpecificationPlan.setProperty("Version", deploymentSpecificationPlan.getVendor()); }
+            if (deploymentSpecificationPlan.getSystem() != null) { vDeploymentSpecificationPlan.setProperty("Version", deploymentSpecificationPlan.getVersion()); }
             // TODO - determine if Imports / Exports are Vertexes or properties.
 
             deploymentSpecificationPlan.setDeployed(success);
