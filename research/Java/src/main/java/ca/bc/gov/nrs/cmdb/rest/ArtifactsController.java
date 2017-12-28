@@ -8,6 +8,7 @@ package ca.bc.gov.nrs.cmdb.rest;
 import ca.bc.gov.nrs.cmdb.model.Artifact;
 import ca.bc.gov.nrs.cmdb.model.RequirementSpec;
 import ca.bc.gov.nrs.cmdb.model.SelectorSpec;
+import ca.bc.gov.nrs.cmdb.model.UploadSpec;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.orientechnologies.orient.core.command.OCommandRequest;
@@ -287,13 +288,18 @@ public class ArtifactsController {
         requiresHash.put ("deployer_credential", credential);
         artifact.setProvides(requiresHash);
 
+        // setup an upload spec.
+
+        UploadSpec uploadSpec = new UploadSpec();
+        uploadSpec.setKind("artifact");
+        uploadSpec.setValue(artifact);
 
         // return the result
         //return result.toJson();//gson.toJson(result);
         ObjectMapper mapper = new ObjectMapper();
         String result = null;
         try {
-            result = mapper.writeValueAsString(artifact);
+            result = mapper.writeValueAsString(uploadSpec);
         }
         catch (Exception e)
         {

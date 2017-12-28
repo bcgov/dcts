@@ -5,9 +5,7 @@
  */
 package ca.bc.gov.nrs.cmdb.rest;
 
-import ca.bc.gov.nrs.cmdb.model.Artifact;
-import ca.bc.gov.nrs.cmdb.model.DeploymentSpecificationPlan;
-import ca.bc.gov.nrs.cmdb.model.RequirementSpec;
+import ca.bc.gov.nrs.cmdb.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.tinkerpop.blueprints.Direction;
@@ -26,9 +24,7 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 import static ca.bc.gov.nrs.cmdb.GraphTools.*;
 
@@ -66,20 +62,24 @@ public class DeploymentsController {
         HashMap<String, RequirementSpec> requiresHash = input.getRequires();
 
         Boolean haveRequirements = false;
+        ArrayList<ErrorSpec> errorList = new ArrayList<ErrorSpec>();
 
         for (String requirementKey : requiresHash.keySet())
         {
             RequirementSpec requirementSpec = requiresHash.get(requirementKey);
 
             // determine if we have a match for the requirement spec.
-            if (HaveRequirement (graph, requirementKey, requirementSpec))
+            if (! HaveRequirement (graph, requirementKey, requirementSpec))
             {
-                haveRequirements = true;
+                ErrorSpec newError = new ErrorSpec();
+                newError.setCode("RequirementNotMet");
+                newError.setMessage("Requirement " + requirementKey + " not met.");
+                newError.setTarget(requirementKey);
+                errorList.add(newError);
             }
-
         }
 
-        if (haveRequirements)
+        if (errorList.size() == 0)
         {
             // setup the new deployment specification plan.
             DeploymentSpecificationPlan deploymentSpecificationPlan = new DeploymentSpecificationPlan();
@@ -91,9 +91,6 @@ public class DeploymentsController {
 
             deploymentSpecificationPlan.setName("New Deployment Specification Plan " + dateFormat.format(cal.getTime()));
             deploymentSpecificationPlan.setArtifact(input);
-
-
-
 
             if (graph.getVertexType("DeploymentSpecificationPlan") == null)
             {
@@ -119,7 +116,6 @@ public class DeploymentsController {
                 }
             }
 
-
             // done with the graph
             graph.shutdown();
 
@@ -130,15 +126,27 @@ public class DeploymentsController {
             }
             catch (Exception e)
             {
-                result = "\"ERROR" + e.toString() + "\"";
+                ErrorSpec newError = new ErrorSpec();
+                newError.setCode("Exception");
+                newError.setMessage(e.toString());
+                newError.setTarget("ObjectMapper");
+                result = newError.toJson();
             }
         }
         else
         {
-            result = "\"ERROR - Requirements not met.\"";
+            ErrorSpec newError = new ErrorSpec();
+            newError.setCode ("RequirementsMissing");
+            newError.setMessage ("Unable to locate requirements for the deployment.  See the details element for more information.");
+            newError.setTarget ("startDeployment");
+            newError.setDetails (errorList.toArray(new ErrorSpec[0]));
+            // create an error spec.
+            ErrorResponse errorResponse = new ErrorResponse();
+            errorResponse.setError (newError);
+            // convert to json.
+            result = errorResponse.toJson();
+
         }
-
-
 
         // return the result
         final HttpHeaders httpHeaders= new HttpHeaders();
@@ -186,7 +194,6 @@ public class DeploymentsController {
                 artifact.setName((String) vArtifact.getProperty("name"));
                 deploymentSpecificationPlan.setArtifact(artifact);
             }
-
 
         }
         else

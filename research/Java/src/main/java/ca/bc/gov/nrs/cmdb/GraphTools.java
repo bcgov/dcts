@@ -1,5 +1,6 @@
 package ca.bc.gov.nrs.cmdb;
 
+import ca.bc.gov.nrs.cmdb.model.Artifact;
 import ca.bc.gov.nrs.cmdb.model.RequirementSpec;
 import ca.bc.gov.nrs.cmdb.model.SelectorSpec;
 import com.tinkerpop.blueprints.Direction;
@@ -7,7 +8,68 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
+import java.util.HashMap;
+
 public class GraphTools {
+
+
+    public static void updatedRequirements(OrientGraphNoTx graph, String edgeName, OrientVertex vArtifact, HashMap<String, RequirementSpec> requirementHash)
+    {
+        if (requirementHash != null)
+        {
+            // start by verifying that the RequirementSpec exists.
+            CreateVertexTypeIfNotExists( graph, "RequirementSpec");
+
+            for (String requirementType : requirementHash.keySet())
+            {
+                RequirementSpec requirementSpec = requirementHash.get(requirementType);
+                OrientVertex vRequirementSpec = CreateVertexIfNotExists (graph, "RequirementSpec", requirementSpec.getKey(requirementType));
+                // Set properties.
+
+                vRequirementSpec.setProperty("quantifier", requirementSpec.getQuantifier());
+                vRequirementSpec.setProperty("scope", requirementSpec.getScope());
+
+                safeVertexPropertySet(vRequirementSpec, "version", requirementSpec.getVersion());
+
+                // add the expand vector.
+
+                // create an edge.
+                CreateEdgeIfNotExists(graph,vArtifact,vRequirementSpec, edgeName);
+            }
+        }
+    }
+
+    public static void safeVertexPropertySet (OrientVertex vertex, String propertyName, String propertyValue)
+    {
+        if (propertyValue != null)
+        {
+            vertex.setProperty(propertyName, propertyValue);
+        }
+    }
+
+    public static OrientVertex CreateArtifactVertex (OrientGraphNoTx graph, Artifact artifact)
+    {
+        // create the item in the graph database.
+        OrientVertex vArtifact = graph.addVertex("class:Artifact");
+        vArtifact.setProperty("key", artifact.getKey());
+        vArtifact.setProperty("name", artifact.getName());
+        safeVertexPropertySet(vArtifact, "system",artifact.getSystem());
+
+
+        safeVertexPropertySet(vArtifact,"shortName",artifact.getShortName());
+        safeVertexPropertySet(vArtifact,"description",artifact.getDescription());
+        safeVertexPropertySet(vArtifact,"url",artifact.getUrl());
+        safeVertexPropertySet(vArtifact,"vendor",artifact.getVendor());
+        safeVertexPropertySet(vArtifact,"vendorContact",artifact.getVendorContact());
+        safeVertexPropertySet(vArtifact,"version",artifact.getVersion());
+
+        /* requires and provides are stored as related vertexes with edges.  */
+
+        updatedRequirements (graph, "Requires", vArtifact, artifact.getRequires());
+        updatedRequirements (graph, "Provides", vArtifact, artifact.getProvides());
+
+        return vArtifact;
+    }
 
     public static void CreateVertexTypeIfNotExists(OrientGraphNoTx graph, String name)
     {

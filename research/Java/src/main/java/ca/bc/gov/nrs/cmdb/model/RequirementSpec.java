@@ -29,6 +29,12 @@ public class RequirementSpec {
   public String getResolution() { return resolution; }
   public void setResolution(String resolution ) { this.resolution = resolution; }
 
+  private String artifactKey = null;
+
+  @JsonProperty("artifact-key")
+  public String getArtifactKey() { return artifactKey; }
+  public void setArtifactKey(String artifactKey ) { this.artifactKey = artifactKey; }
+
   private String[] expand = null;
 
   @JsonProperty("expand")
@@ -43,10 +49,6 @@ public class RequirementSpec {
 
   private String version = null;
 
-  public RequirementSpec version(String version) {
-    this.version = version;
-    return this;
-  }
 
 
   /**
@@ -59,6 +61,11 @@ public class RequirementSpec {
   }
   public void setVersion(String version) {
     this.version = version;
+  }
+
+  public RequirementSpec version(String version) {
+    this.version = version;
+    return this;
   }
 
 
@@ -76,13 +83,10 @@ public class RequirementSpec {
         Objects.equals(version, selector.version) ;
   }
 
-
-
   @Override
   public int hashCode() {
     return Objects.hash(quantifier, version, scope, resolution);
   }
-
 
   public String getKey (String keyType)
   {
