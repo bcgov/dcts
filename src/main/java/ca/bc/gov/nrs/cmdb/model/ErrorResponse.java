@@ -20,6 +20,11 @@ public class ErrorResponse {
   public ErrorSpec getError() { return error; }
   public void setError(ErrorSpec error ) { this.error = error; }
 
+  private Artifact[] artifacts;
+  @JsonProperty("artifacts")
+  public Artifact[] getArtifacts() { return artifacts; }
+  public void setArtifacts(Artifact[] artifacts) { this.artifacts = artifacts; }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {

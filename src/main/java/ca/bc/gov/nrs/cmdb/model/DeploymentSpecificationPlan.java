@@ -49,11 +49,11 @@ public class DeploymentSpecificationPlan {
   }
 
   // The Artifact specified as a parameter when the DeploymentSpecificationPlan was created.
-  private Artifact artifact;
+  private Artifact[] artifacts;
 
-  @JsonProperty("artifact")
-  public Artifact getArtifact() {return artifact;}
-  public void setArtifact(Artifact artifact) {this.artifact = artifact;}
+  @JsonProperty("artifacts")
+  public Artifact[] getArtifacts() {return artifacts;}
+  public void setArtifacts(Artifact[] artifacts) {this.artifacts = artifacts;}
 
   /**
    * The name of the application.

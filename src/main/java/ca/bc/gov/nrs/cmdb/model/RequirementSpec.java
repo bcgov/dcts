@@ -3,6 +3,7 @@ package ca.bc.gov.nrs.cmdb.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 
+import java.util.HashMap;
 import java.util.Objects;
 
 /**
@@ -49,7 +50,15 @@ public class RequirementSpec {
 
   private String version = null;
 
+  private ErrorSpec error = null;
+  @JsonProperty("error")
+  public ErrorSpec getError() { return error; }
+  public void setError(ErrorSpec error ) { this.error = error; }
 
+  private HashMap<String, String> matches;
+  @JsonProperty("matches")
+  public HashMap<String, String> getMatches() { return matches; }
+  public void setMatches(HashMap<String, String> matches ) { this.matches = matches; }
 
   /**
    * The version of the Export

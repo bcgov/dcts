@@ -58,7 +58,7 @@ $('#clearAllArtifacts').click(function() {
                 data: $("#artifact").text(),
                 success: function(data) {
                     var dataAsString = JSON.stringify(data, undefined, 2);
-                    var output = $("#outputStart").text() + "Success!\nResponse:\n" + dataAsString;
+                    var output = $("#outputStart").text() + "\nResponse:\n" + dataAsString;
                     $("#outputStart").html( output );
 
                     // set the deployment key
@@ -150,7 +150,7 @@ $('#clearAllArtifacts').click(function() {
 <form id="deploymentStartForm" method="post" action="deployments/start">
     <table border="0">
         <td>
-            <h4>Artifact JSON:</h4>
+            <h4>JSON List of Artifacts:</h4>
 
             <textarea id="artifact" rows="20" cols="80" name="artifact"></textarea>
         </td>
@@ -168,7 +168,7 @@ $('#clearAllArtifacts').click(function() {
 <hr/>
 
 <h2>Upload Data</h2>
-<form id="artifactUploadForm" method="post" action="artifacts">
+<form id="artifactUploadForm" method="post" action="upload">
     <table border="0">
         <td>
             <h4>Requirement JSON:</h4>

@@ -52,32 +52,40 @@ public class DeploymentsController {
      */
     @PostMapping("/start")
 
-    public ResponseEntity<String> StartDeployment(@RequestBody Artifact input)
+    public ResponseEntity<String> StartDeployment(@RequestBody Artifact[] artifacts)
     {
         OrientGraphNoTx graph =  factory.getNoTx();
 
         String result = null;
         // before we setup the deployment specification plan, check to see if we meet the requirements.
 
-        HashMap<String, RequirementSpec> requiresHash = input.getRequires();
-
         Boolean haveRequirements = false;
         ArrayList<ErrorSpec> errorList = new ArrayList<ErrorSpec>();
 
-        for (String requirementKey : requiresHash.keySet())
-        {
-            RequirementSpec requirementSpec = requiresHash.get(requirementKey);
 
-            // determine if we have a match for the requirement spec.
-            if (! HaveRequirement (graph, requirementKey, requirementSpec))
+        for(Artifact input : artifacts)
+        {
+            HashMap<String, RequirementSpec> requiresHash = input.getRequires();
+
+            for (String requirementKey : requiresHash.keySet())
             {
-                ErrorSpec newError = new ErrorSpec();
-                newError.setCode("RequirementNotMet");
-                newError.setMessage("Requirement " + requirementKey + " not met.");
-                newError.setTarget(requirementKey);
-                errorList.add(newError);
+                RequirementSpec requirementSpec = requiresHash.get(requirementKey);
+
+                // determine if we have a match for the requirement spec.
+                if (! HaveRequirement (graph, requirementKey, requirementSpec))
+                {
+                    int errorCount = errorList.size() + 1;
+
+                    ErrorSpec newError = new ErrorSpec();
+                    newError.setCode("RequirementNotMet");
+                    newError.setMessage("Requirement " + requirementKey + " not met.");
+                    newError.setTarget("Deployment-Error-" + errorCount);
+                    errorList.add(newError);
+                    requirementSpec.setError(newError);
+                }
             }
         }
+
 
         if (errorList.size() == 0)
         {
@@ -90,7 +98,7 @@ public class DeploymentsController {
             Calendar cal = Calendar.getInstance();
 
             deploymentSpecificationPlan.setName("New Deployment Specification Plan " + dateFormat.format(cal.getTime()));
-            deploymentSpecificationPlan.setArtifact(input);
+            deploymentSpecificationPlan.setArtifacts(artifacts);
 
             if (graph.getVertexType("DeploymentSpecificationPlan") == null)
             {
@@ -101,21 +109,20 @@ public class DeploymentsController {
             vDeploymentSpecificationPlan.setProperty("key", deploymentSpecificationPlan.getKey());
             vDeploymentSpecificationPlan.setProperty("name", deploymentSpecificationPlan.getName());
 
-            // get the Artifact.
+            // update the graph
+            for(Artifact input : artifacts) {
+                OrientVertex vArtifact = null;
+                Iterable<Vertex> Artifacts = graph.getVertices("Artifact.key", input.getKey());
+                if (Artifacts != null && Artifacts.iterator().hasNext()) {
+                    vArtifact = (OrientVertex) Artifacts.iterator().next();
+                    // Add an edge to the Artifact.
 
-            OrientVertex vArtifact = null;
-            Iterable<Vertex> Artifacts = graph.getVertices("Artifact.key", input.getKey());
-            if (Artifacts != null && Artifacts.iterator().hasNext())
-            {
-                vArtifact = (OrientVertex) Artifacts.iterator().next();
-                // Add an edge to the Artifact.
-
-                Iterable<com.tinkerpop.blueprints.Edge> edges = vDeploymentSpecificationPlan.getEdges( vArtifact, Direction.BOTH, "Deploys");
-                if (edges == null || ! edges.iterator().hasNext()) {
-                    graph.addEdge(null, vDeploymentSpecificationPlan, vArtifact, "Deploys");
+                    Iterable<com.tinkerpop.blueprints.Edge> edges = vDeploymentSpecificationPlan.getEdges(vArtifact, Direction.BOTH, "Deploys");
+                    if (edges == null || !edges.iterator().hasNext()) {
+                        graph.addEdge(null, vDeploymentSpecificationPlan, vArtifact, "Deploys");
+                    }
                 }
             }
-
             // done with the graph
             graph.shutdown();
 
@@ -143,6 +150,8 @@ public class DeploymentsController {
             // create an error spec.
             ErrorResponse errorResponse = new ErrorResponse();
             errorResponse.setError (newError);
+
+            errorResponse.setArtifacts(artifacts);
             // convert to json.
             result = errorResponse.toJson();
 
@@ -178,7 +187,6 @@ public class DeploymentsController {
             if (deploymentSpecificationPlan.getSystem() != null) { vDeploymentSpecificationPlan.setProperty("Vendor", deploymentSpecificationPlan.getVendor()); }
             if (deploymentSpecificationPlan.getSystem() != null) { vDeploymentSpecificationPlan.setProperty("Vendor-Contact", deploymentSpecificationPlan.getVendorContact()); }
             if (deploymentSpecificationPlan.getSystem() != null) { vDeploymentSpecificationPlan.setProperty("Version", deploymentSpecificationPlan.getVersion()); }
-            // TODO - determine if Imports / Exports are Vertexes or properties.
 
             deploymentSpecificationPlan.setDeployed(success);
 
@@ -192,7 +200,7 @@ public class DeploymentsController {
                 Artifact artifact = new Artifact();
                 artifact.setKey((String) vArtifact.getProperty("key"));
                 artifact.setName((String) vArtifact.getProperty("name"));
-                deploymentSpecificationPlan.setArtifact(artifact);
+                //deploymentSpecificationPlan.setArtifact(artifact);
             }
 
         }

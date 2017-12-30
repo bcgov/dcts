@@ -222,7 +222,10 @@ public class ArtifactsController {
         ObjectMapper mapper = new ObjectMapper();
         String result = null;
         try {
-            result = mapper.writeValueAsString(artifact);
+
+            Artifact[] artifacts = new Artifact[1];
+            artifacts[0] = artifact;
+            result = mapper.writeValueAsString(artifacts);
         }
         catch (Exception e)
         {
