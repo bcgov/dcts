@@ -34,11 +34,13 @@ $('#clearAllArtifacts').click(function() {
 
     });
 
+$('#getSample').click(function() {
     // get the example content.
     $.get( "artifacts/getTemplate", "", function( data ) {
     var formatted = JSON.stringify(data, undefined, 2);
         $( "#artifact" ).html( formatted );
     }, 'json');
+}
 
     // deployment start
     $("#deploymentStartForm").submit(function(e) {
@@ -55,7 +57,7 @@ $('#clearAllArtifacts').click(function() {
                 type: 'post',
                 dataType: 'json',
                 contentType: 'application/json',
-                data: $("#artifact").text(),
+                data: $("#artifact").val(),
                 success: function(data) {
                     var dataAsString = JSON.stringify(data, undefined, 2);
                     var output = $("#outputStart").text() + "\nResponse:\n" + dataAsString;
@@ -160,8 +162,8 @@ $('#clearAllArtifacts').click(function() {
 
         </td>
     </table>
+    <input type="button" id="getSample" value="Get Sample">
     <input type="submit" value="Start Deployment">
-
 </form>
 
 

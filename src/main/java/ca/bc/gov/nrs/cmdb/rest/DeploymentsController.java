@@ -112,9 +112,9 @@ public class DeploymentsController {
             // update the graph
             for(Artifact input : artifacts) {
                 OrientVertex vArtifact = null;
-                Iterable<Vertex> Artifacts = graph.getVertices("Artifact.key", input.getKey());
-                if (Artifacts != null && Artifacts.iterator().hasNext()) {
-                    vArtifact = (OrientVertex) Artifacts.iterator().next();
+                Iterable<Vertex> vArtifacts = graph.getVertices("Artifact.key", input.getKey());
+                if (vArtifacts != null && vArtifacts.iterator().hasNext()) {
+                    vArtifact = (OrientVertex) vArtifacts.iterator().next();
                     // Add an edge to the Artifact.
 
                     Iterable<com.tinkerpop.blueprints.Edge> edges = vDeploymentSpecificationPlan.getEdges(vArtifact, Direction.BOTH, "Deploys");
