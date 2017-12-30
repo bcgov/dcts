@@ -1,0 +1,102 @@
+[
+  {
+    "name": "BEAVERTON",
+    "facts": {
+      "fqn":"BEAVERTON.bcgov",
+      "all_ipv4_addresses":[],
+      "all_ipv6_addresses":[],
+      "default_ipv4":"10.0.10.15",
+      "default_ipv6":"",
+      "devices":{},
+      "os_family": "SunOS",
+      "os_name": "SunOS",
+      "os_version": "",
+      "interfaces":{
+        "lo":{},
+        "eth1":{},
+        "eth0":{
+          "active":true,
+          "macaddress": "",
+          "ipv4": {
+            "address": "10.0.10.15",                                                                                
+            "netmask": "255.255.255.0",                                                                            
+            "network": "10.0.10.0" 
+          },
+          "ipv6": []
+        }
+      }
+    },
+    "labels": {
+        "environment":"delivery",
+        "dc-provider":"hp",
+        "dc-region":"calgary",
+        "reserved-for": "OFM11g"
+    }
+  },{
+    "name": "TROY",
+    "facts": {
+      "fqn":"TROY.bcgov",
+      "all_ipv4_addresses":[],
+      "all_ipv6_addresses":[],
+      "default_ipv4":"10.0.20.15",
+      "default_ipv6":{},
+      "devices":{},
+      "os_family": "SunOS",
+      "os_name": "SunOS",
+      "os_version": "",
+      "interfaces":{
+        "lo":{},
+        "eth1":{},
+        "eth0":{
+          "active":true,
+          "macaddress": "",
+          "ipv4": {
+            "address": "10.0.20.16",                                                                                
+            "netmask": "255.255.255.0",                                                                            
+            "network": "10.0.20.0" 
+          },
+          "ipv6": []
+        }
+      }
+    },
+    "labels": {
+        "environment":"test",
+        "dc-provider":"hp",
+        "dc-region":"calgary",
+        "reserved-for": "OFM11g"
+    }
+  },{
+    "name": "NICHBURG",
+    "facts": {
+      "fqn":"NICHBURG.bcgov",
+      "all_ipv4_addresses":[],
+      "all_ipv6_addresses":[],
+      "default_ipv4": "10.0.40.15",
+      "default_ipv6":{},
+      "devices":{},
+      "os_family": "SunOS",
+      "os_name": "SunOS",
+      "os_version": "",
+      "interfaces":{
+        "lo":{},
+        "eth1":{},
+        "eth0":{
+          "active":true,
+          "macaddress": "",
+          "ipv4": {
+            "address": "10.0.40.15",
+            "netmask": "255.255.255.0",                                                                            
+            "network": "10.0.40.0" 
+          },
+          "ipv6": []
+        }
+      }
+    },
+    "labels": {
+        "environment":"production",
+        "dc-provider":"hp",
+        "dc-region":"kamloops",
+        "reserved-for": "OFM11g"
+    }
+  }
+]
