@@ -141,7 +141,6 @@ public class ArtifactsController {
             artifact.setVendorContact("support@oracle.com");
             artifact.setVersion("11.1.1");
 
-
             // create a requirement.
 
             RequirementSpec requirementSpec = new RequirementSpec();
@@ -150,6 +149,29 @@ public class ArtifactsController {
             String[] expand = new String[1];
 
             requirementSpec.setScope("deployment");
+
+            HashMap<String, RequirementSpec>  requiresHash = new HashMap<String, RequirementSpec> ();
+
+            requiresHash.put ("host", requirementSpec);
+
+            artifact.setRequires(requiresHash);
+
+            // add provides.
+
+            RequirementSpec serverSpec1 = new RequirementSpec();
+            serverSpec1.setInterface("com.oracle.weblogic");
+            serverSpec1.setVersion("10.3.6");
+
+            RequirementSpec serverSpec2 = new RequirementSpec();
+            serverSpec1.setInterface("com.oracle.forms");
+            serverSpec1.setVersion("???");
+
+
+            ArrayList<AbstractMap.SimpleEntry<String, RequirementSpec>> providesList = new ArrayList<AbstractMap.SimpleEntry<String, RequirementSpec>>();
+            providesList.add (new AbstractMap.SimpleEntry<String, RequirementSpec>("server",serverSpec1));
+            providesList.add (new AbstractMap.SimpleEntry<String, RequirementSpec>("server",serverSpec2));
+
+            artifact.setProvides((AbstractMap.SimpleEntry<String, RequirementSpec>[]) providesList.toArray( new Object[providesList.size()] ));
 
             // create the vertex.
             CreateArtifactVertex (graph, artifact);

@@ -24,6 +24,11 @@ public class RequirementSpec {
   public String getQuantifier() { return quantifier; }
   public void setQuantifier(String quantifier ) { this.quantifier = quantifier; }
 
+  private String interfaceText = null;
+  @JsonProperty("interface")
+  public String getInterface() { return interfaceText; }
+  public void setInterface(String interfaceText ) { this.interfaceText = interfaceText; }
+
   private String resolution = null;
 
   @JsonProperty("resolution")
