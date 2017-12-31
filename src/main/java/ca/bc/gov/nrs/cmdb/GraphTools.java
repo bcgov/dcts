@@ -30,10 +30,9 @@ public class GraphTools {
                 RequirementSpec requirementSpec = requirementHash.get(requirementType);
                 OrientVertex vRequirementSpec = CreateVertexIfNotExists (graph, "RequirementSpec", requirementSpec.getKey(requirementType));
                 // Set properties.
-
-                vRequirementSpec.setProperty("quantifier", requirementSpec.getQuantifier());
-                vRequirementSpec.setProperty("scope", requirementSpec.getScope());
-
+                safeVertexPropertySet(vRequirementSpec, "quantifier", requirementSpec.getQuantifier());
+                safeVertexPropertySet(vRequirementSpec, "scope", requirementSpec.getScope());
+                safeVertexPropertySet(vRequirementSpec, "interface", requirementSpec.getInterface());
                 safeVertexPropertySet(vRequirementSpec, "version", requirementSpec.getVersion());
 
                 // add the expand vector.
@@ -56,11 +55,11 @@ public class GraphTools {
                 String requirementType = item.getKey();
                 RequirementSpec requirementSpec = item.getValue();
                 OrientVertex vRequirementSpec = CreateVertexIfNotExists (graph, "RequirementSpec", requirementSpec.getKey(requirementType));
+
                 // Set properties.
-
-                vRequirementSpec.setProperty("quantifier", requirementSpec.getQuantifier());
-                vRequirementSpec.setProperty("scope", requirementSpec.getScope());
-
+                safeVertexPropertySet(vRequirementSpec, "quantifier", requirementSpec.getQuantifier());
+                safeVertexPropertySet(vRequirementSpec, "scope", requirementSpec.getScope());
+                safeVertexPropertySet(vRequirementSpec, "interface", requirementSpec.getInterface());
                 safeVertexPropertySet(vRequirementSpec, "version", requirementSpec.getVersion());
 
                 // add the expand vector.
