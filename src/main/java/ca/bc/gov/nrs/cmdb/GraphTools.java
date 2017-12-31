@@ -8,9 +8,12 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
+import java.util.AbstractMap;
 import java.util.HashMap;
 
 public class GraphTools {
+
+
 
 
     public static void updatedRequirements(OrientGraphNoTx graph, String edgeName, OrientVertex vArtifact, HashMap<String, RequirementSpec> requirementHash)
@@ -38,6 +41,35 @@ public class GraphTools {
             }
         }
     }
+
+    public static void updatedRequirements(OrientGraphNoTx graph, String edgeName, OrientVertex vArtifact, AbstractMap.SimpleEntry<String, RequirementSpec>[] requirements)
+    {
+        if (requirements != null && requirements.length > 0)
+        {
+            // start by verifying that the RequirementSpec exists.
+            CreateVertexTypeIfNotExists( graph, "RequirementSpec");
+
+            for (AbstractMap.SimpleEntry<String, RequirementSpec> item : requirements)
+            {
+                String requirementType = item.getKey();
+                RequirementSpec requirementSpec = item.getValue();
+                OrientVertex vRequirementSpec = CreateVertexIfNotExists (graph, "RequirementSpec", requirementSpec.getKey(requirementType));
+                // Set properties.
+
+                vRequirementSpec.setProperty("quantifier", requirementSpec.getQuantifier());
+                vRequirementSpec.setProperty("scope", requirementSpec.getScope());
+
+                safeVertexPropertySet(vRequirementSpec, "version", requirementSpec.getVersion());
+
+                // add the expand vector.
+
+                // create an edge.
+                CreateEdgeIfNotExists(graph,vArtifact,vRequirementSpec, edgeName);
+            }
+        }
+    }
+
+
 
     public static void safeVertexPropertySet (OrientVertex vertex, String propertyName, String propertyValue)
     {

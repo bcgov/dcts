@@ -22,11 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.UUID;
-import static ca.bc.gov.nrs.cmdb.GraphTools.CreateEdgeIfNotExists;
-import static ca.bc.gov.nrs.cmdb.GraphTools.CreateVertexIfNotExists;
-import static ca.bc.gov.nrs.cmdb.GraphTools.CreateVertexTypeIfNotExists;
+import java.util.*;
+
+import static ca.bc.gov.nrs.cmdb.GraphTools.*;
+
 /**
  *
  * @author George
@@ -49,65 +48,6 @@ public class ArtifactsController {
      * @return
      */
 
-
-
-    private void updatedRequirements(OrientGraphNoTx graph, String edgeName, OrientVertex vArtifact, HashMap<String, RequirementSpec> requirementHash)
-    {
-        if (requirementHash != null)
-        {
-            // start by verifying that the RequirementSpec exists.
-            CreateVertexTypeIfNotExists( graph, "RequirementSpec");
-
-            for (String requirementType : requirementHash.keySet())
-            {
-                RequirementSpec requirementSpec = requirementHash.get(requirementType);
-                OrientVertex vRequirementSpec = CreateVertexIfNotExists (graph, "RequirementSpec", requirementSpec.getKey(requirementType));
-                // Set properties.
-
-                vRequirementSpec.setProperty("quantifier", requirementSpec.getQuantifier());
-                vRequirementSpec.setProperty("scope", requirementSpec.getScope());
-
-                safeVertexPropertySet(vRequirementSpec, "version", requirementSpec.getVersion());
-
-                // add the expand vector.
-
-                // create an edge.
-                CreateEdgeIfNotExists(graph,vArtifact,vRequirementSpec, edgeName);
-            }
-        }
-    }
-
-    private void safeVertexPropertySet (OrientVertex vertex, String propertyName, String propertyValue)
-    {
-        if (propertyValue != null)
-        {
-            vertex.setProperty(propertyName, propertyValue);
-        }
-    }
-
-    private OrientVertex CreateArtifactVertex (OrientGraphNoTx graph, Artifact artifact)
-    {
-        // create the item in the graph database.
-        OrientVertex vArtifact = graph.addVertex("class:Artifact");
-        vArtifact.setProperty("key", artifact.getKey());
-        vArtifact.setProperty("name", artifact.getName());
-        safeVertexPropertySet(vArtifact, "system",artifact.getSystem());
-
-
-        safeVertexPropertySet(vArtifact,"shortName",artifact.getShortName());
-        safeVertexPropertySet(vArtifact,"description",artifact.getDescription());
-        safeVertexPropertySet(vArtifact,"url",artifact.getUrl());
-        safeVertexPropertySet(vArtifact,"vendor",artifact.getVendor());
-        safeVertexPropertySet(vArtifact,"vendorContact",artifact.getVendorContact());
-        safeVertexPropertySet(vArtifact,"version",artifact.getVersion());
-
-        /* requires and provides are stored as related vertexes with edges.  */
-
-        updatedRequirements (graph, "Requires", vArtifact, artifact.getRequires());
-        updatedRequirements (graph, "Provides", vArtifact, artifact.getProvides());
-
-        return vArtifact;
-    }
 
     @RequestMapping("/resetTemplate")
     public String ResetTemplate()
@@ -269,7 +209,6 @@ public class ArtifactsController {
 
         RequirementSpec host = new RequirementSpec();
 
-
         host.setQuantifier("?");
         host.setScope("deployment");
         String [] expandArray = new String[1];
@@ -281,15 +220,17 @@ public class ArtifactsController {
         SelectorSpec credentialSelector = new SelectorSpec();
         credentialSelector.setName ("com.oracle.weblogic.credential.deployer");
 
-
         credential.setQuantifier("?");
         credential.setScope("deployment");
 
-        HashMap<String, RequirementSpec>  requiresHash = new HashMap<String, RequirementSpec> ();
+        AbstractMap.SimpleEntry<String, RequirementSpec> hostEntry = new AbstractMap.SimpleEntry<String, RequirementSpec>("host", host);
+        AbstractMap.SimpleEntry<String, RequirementSpec> deployerCredentials = new AbstractMap.SimpleEntry<String, RequirementSpec>("deployer_credential", credential);
 
-        requiresHash.put ("host", host);
-        requiresHash.put ("deployer_credential", credential);
-        artifact.setProvides(requiresHash);
+        ArrayList<AbstractMap.SimpleEntry<String, RequirementSpec>> providesList = new ArrayList<AbstractMap.SimpleEntry<String, RequirementSpec>>();
+        providesList.add (hostEntry);
+        providesList.add (deployerCredentials);
+
+        artifact.setProvides((AbstractMap.SimpleEntry<String, RequirementSpec>[]) providesList.toArray( new Object[providesList.size()] ));
 
         // setup an upload spec.
 
@@ -309,8 +250,6 @@ public class ArtifactsController {
             result = "\"ERROR" + e.toString() + "\"";
         }
         return result;
-
-
 
         }
 
