@@ -18,11 +18,14 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraphCommand;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.AbstractMap.SimpleImmutableEntry;
 
 import static ca.bc.gov.nrs.cmdb.GraphTools.*;
 
@@ -167,11 +170,15 @@ public class ArtifactsController {
             serverSpec1.setVersion("???");
 
 
-            ArrayList<AbstractMap.SimpleEntry<String, RequirementSpec>> providesList = new ArrayList<AbstractMap.SimpleEntry<String, RequirementSpec>>();
-            providesList.add (new AbstractMap.SimpleEntry<String, RequirementSpec>("server",serverSpec1));
-            providesList.add (new AbstractMap.SimpleEntry<String, RequirementSpec>("server",serverSpec2));
+            ArrayList<Pair<String, RequirementSpec>> providesList = new ArrayList<Pair<String, RequirementSpec>>();
 
-            artifact.setProvides((AbstractMap.SimpleEntry<String, RequirementSpec>[]) providesList.toArray( new Object[providesList.size()] ));
+            Pair<String, RequirementSpec> pairServerSpec1 = new ImmutablePair<String, RequirementSpec>("server",serverSpec1);
+            Pair<String, RequirementSpec> pairServerSpec2 = new ImmutablePair<String, RequirementSpec>("server",serverSpec2);
+
+            providesList.add (pairServerSpec1);
+            providesList.add (pairServerSpec2);
+
+            artifact.setProvides( providesList );
 
             // create the vertex.
             CreateArtifactVertex (graph, artifact);
@@ -245,14 +252,16 @@ public class ArtifactsController {
         credential.setQuantifier("?");
         credential.setScope("deployment");
 
-        AbstractMap.SimpleEntry<String, RequirementSpec> hostEntry = new AbstractMap.SimpleEntry<String, RequirementSpec>("host", host);
-        AbstractMap.SimpleEntry<String, RequirementSpec> deployerCredentials = new AbstractMap.SimpleEntry<String, RequirementSpec>("deployer_credential", credential);
+        Pair<String, RequirementSpec> hostEntry = new ImmutablePair<String, RequirementSpec>("host", host);
+        Pair<String, RequirementSpec> deployerCredentials = new ImmutablePair<String, RequirementSpec>("deployer_credential", credential);
 
-        ArrayList<AbstractMap.SimpleEntry<String, RequirementSpec>> providesList = new ArrayList<AbstractMap.SimpleEntry<String, RequirementSpec>>();
+
+        ArrayList<Pair<String, RequirementSpec>> providesList = new ArrayList<Pair<String, RequirementSpec>>();
+
         providesList.add (hostEntry);
         providesList.add (deployerCredentials);
 
-        artifact.setProvides((AbstractMap.SimpleEntry<String, RequirementSpec>[]) providesList.toArray( new Object[providesList.size()] ));
+        artifact.setProvides(providesList);
 
         // setup an upload spec.
 

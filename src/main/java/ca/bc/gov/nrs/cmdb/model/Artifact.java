@@ -2,8 +2,10 @@ package ca.bc.gov.nrs.cmdb.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -123,12 +125,12 @@ public class Artifact {
     this.version = version;
   }
 
-  private AbstractMap.SimpleEntry<String, RequirementSpec>[] provides = null;
+  private ArrayList<Pair<String, RequirementSpec>> provides = null;
   @JsonProperty("provides")
-  public AbstractMap.SimpleEntry<String, RequirementSpec>[]  getProvides() {
+  public ArrayList<Pair<String, RequirementSpec>>  getProvides() {
     return provides;
   }
-  public void setProvides(AbstractMap.SimpleEntry<String, RequirementSpec>[]  provides) {
+  public void setProvides(ArrayList<Pair<String, RequirementSpec>> provides) {
     this.provides = provides;
   }
 

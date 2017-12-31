@@ -34,6 +34,12 @@
             <artifactId>spring-data-rest-webmvc</artifactId>
             <version>2.6.8.RELEASE</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.0</version>
+        </dependency>
 <!--
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -59,15 +65,6 @@
             </exclusions>
         </dependency>
         
-		<!--
-		
-		use for local development.
-		<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jetty</artifactId>
-        </dependency>
-		
-		-->
 
         <dependency>
             <groupId>com.orientechnologies</groupId>
@@ -147,5 +144,27 @@
             <url>https://repo.spring.io/libs-release</url>
         </pluginRepository>
     </pluginRepositories>
+
+    <profiles>
+    <profile>
+        <id>Windows</id>
+        <activation>
+            <os>
+                <family>Windows</family>
+            </os>
+        </activation>
+        <dependencies>
+            <!--
+                this dependency is used for local development on a PC without a servlet runner.
+                Note that it will conflict with JBoss wildfly, so do not include in a Linux build.
+            -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-jetty</artifactId>
+            </dependency>
+        </dependencies>
+
+    </profile>
+    </profiles>
 </project>
 

@@ -7,8 +7,10 @@ import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GraphTools {
@@ -42,14 +44,14 @@ public class GraphTools {
         }
     }
 
-    public static void updatedRequirements(OrientGraphNoTx graph, String edgeName, OrientVertex vArtifact, AbstractMap.SimpleEntry<String, RequirementSpec>[] requirements)
+    public static void updatedRequirements(OrientGraphNoTx graph, String edgeName, OrientVertex vArtifact, ArrayList<Pair<String, RequirementSpec>> requirements)
     {
-        if (requirements != null && requirements.length > 0)
+        if (requirements != null && requirements.size() > 0)
         {
             // start by verifying that the RequirementSpec exists.
             CreateVertexTypeIfNotExists( graph, "RequirementSpec");
 
-            for (AbstractMap.SimpleEntry<String, RequirementSpec> item : requirements)
+            for (Pair<String, RequirementSpec> item : requirements)
             {
                 String requirementType = item.getKey();
                 RequirementSpec requirementSpec = item.getValue();
