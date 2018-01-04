@@ -125,12 +125,12 @@ public class Artifact {
     this.version = version;
   }
 
-  private ArrayList<Pair<String, RequirementSpec>> provides = null;
+  private ArrayList<HashMap<String, RequirementSpec>> provides = null;
   @JsonProperty("provides")
-  public ArrayList<Pair<String, RequirementSpec>>  getProvides() {
+  public ArrayList<HashMap<String, RequirementSpec>>  getProvides() {
     return provides;
   }
-  public void setProvides(ArrayList<Pair<String, RequirementSpec>> provides) {
+  public void setProvides(ArrayList<HashMap<String, RequirementSpec>> provides) {
     this.provides = provides;
   }
 

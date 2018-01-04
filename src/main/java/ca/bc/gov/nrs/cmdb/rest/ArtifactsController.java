@@ -170,10 +170,14 @@ public class ArtifactsController {
             serverSpec1.setVersion("???");
 
 
-            ArrayList<Pair<String, RequirementSpec>> providesList = new ArrayList<Pair<String, RequirementSpec>>();
+            ArrayList<HashMap<String, RequirementSpec>> providesList = new ArrayList<HashMap<String, RequirementSpec>>();
 
-            Pair<String, RequirementSpec> pairServerSpec1 = new ImmutablePair<String, RequirementSpec>("server",serverSpec1);
-            Pair<String, RequirementSpec> pairServerSpec2 = new ImmutablePair<String, RequirementSpec>("server",serverSpec2);
+            HashMap<String, RequirementSpec> pairServerSpec1 = new HashMap<String, RequirementSpec>();
+            pairServerSpec1.put("server",serverSpec1);
+
+            HashMap<String, RequirementSpec> pairServerSpec2 = new  HashMap<String, RequirementSpec>();
+            pairServerSpec2.put("server",serverSpec2);
+
 
             providesList.add (pairServerSpec1);
             providesList.add (pairServerSpec2);
@@ -252,11 +256,12 @@ public class ArtifactsController {
         credential.setQuantifier("?");
         credential.setScope("deployment");
 
-        Pair<String, RequirementSpec> hostEntry = new ImmutablePair<String, RequirementSpec>("host", host);
-        Pair<String, RequirementSpec> deployerCredentials = new ImmutablePair<String, RequirementSpec>("deployer_credential", credential);
+        HashMap<String, RequirementSpec> hostEntry = new HashMap<String, RequirementSpec>();
+        hostEntry.put ("host", host);
+        HashMap<String, RequirementSpec> deployerCredentials = new HashMap<String, RequirementSpec>();
+        deployerCredentials.put ("deployer_credential", credential);
 
-
-        ArrayList<Pair<String, RequirementSpec>> providesList = new ArrayList<Pair<String, RequirementSpec>>();
+        ArrayList<HashMap<String, RequirementSpec>> providesList = new ArrayList<HashMap<String, RequirementSpec>>();
 
         providesList.add (hostEntry);
         providesList.add (deployerCredentials);

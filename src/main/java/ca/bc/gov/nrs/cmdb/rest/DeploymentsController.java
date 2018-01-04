@@ -72,7 +72,9 @@ public class DeploymentsController {
                 RequirementSpec requirementSpec = requiresHash.get(requirementKey);
 
                 // determine if we have a match for the requirement spec.
-                if (! HaveRequirement (graph, requirementKey, requirementSpec))
+                RequirementSpec haveRequirement =  HaveRequirement (graph, requirementKey, requirementSpec);
+
+                if (haveRequirement == null)
                 {
                     int errorCount = errorList.size() + 1;
 
@@ -83,6 +85,14 @@ public class DeploymentsController {
                     errorList.add(newError);
                     requirementSpec.setError(newError);
                 }
+                else
+                {
+                    requiresHash.put (requirementKey,haveRequirement );
+                }
+
+
+
+
             }
         }
 

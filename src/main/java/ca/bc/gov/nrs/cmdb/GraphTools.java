@@ -16,8 +16,6 @@ import java.util.HashMap;
 public class GraphTools {
 
 
-
-
     public static void updatedRequirements(OrientGraphNoTx graph, String edgeName, OrientVertex vArtifact, HashMap<String, RequirementSpec> requirementHash)
     {
         if (requirementHash != null)
@@ -43,29 +41,32 @@ public class GraphTools {
         }
     }
 
-    public static void updatedRequirements(OrientGraphNoTx graph, String edgeName, OrientVertex vArtifact, ArrayList<Pair<String, RequirementSpec>> requirements)
+    public static void updatedRequirements(OrientGraphNoTx graph, String edgeName, OrientVertex vArtifact, ArrayList<HashMap<String, RequirementSpec>> requirements)
     {
         if (requirements != null && requirements.size() > 0)
         {
             // start by verifying that the RequirementSpec exists.
             CreateVertexTypeIfNotExists( graph, "RequirementSpec");
 
-            for (Pair<String, RequirementSpec> item : requirements)
+            for (HashMap<String, RequirementSpec> item : requirements)
             {
-                String requirementType = item.getKey();
-                RequirementSpec requirementSpec = item.getValue();
-                OrientVertex vRequirementSpec = CreateVertexIfNotExists (graph, "RequirementSpec", requirementSpec.getKey(requirementType));
+                for (String requirementType : item.keySet())
+                {
+                    RequirementSpec requirementSpec = item.get(requirementType);
+                    OrientVertex vRequirementSpec = CreateVertexIfNotExists (graph, "RequirementSpec", requirementSpec.getKey(requirementType));
 
-                // Set properties.
-                safeVertexPropertySet(vRequirementSpec, "quantifier", requirementSpec.getQuantifier());
-                safeVertexPropertySet(vRequirementSpec, "scope", requirementSpec.getScope());
-                safeVertexPropertySet(vRequirementSpec, "interface", requirementSpec.getInterface());
-                safeVertexPropertySet(vRequirementSpec, "version", requirementSpec.getVersion());
+                    // Set properties.
+                    safeVertexPropertySet(vRequirementSpec, "quantifier", requirementSpec.getQuantifier());
+                    safeVertexPropertySet(vRequirementSpec, "scope", requirementSpec.getScope());
+                    safeVertexPropertySet(vRequirementSpec, "interface", requirementSpec.getInterface());
+                    safeVertexPropertySet(vRequirementSpec, "version", requirementSpec.getVersion());
 
-                // add the expand vector.
+                    // add the expand vector.
 
-                // create an edge.
-                CreateEdgeIfNotExists(graph,vArtifact,vRequirementSpec, edgeName);
+                    // create an edge.
+                    CreateEdgeIfNotExists(graph,vArtifact,vRequirementSpec, edgeName);
+                }
+
             }
         }
     }
@@ -151,7 +152,7 @@ public class GraphTools {
         return result;
     }
 
-    public static Boolean HaveRequirement (OrientGraphNoTx graph, String requirementType, RequirementSpec requirementSpec)
+    public static RequirementSpec HaveRequirement (OrientGraphNoTx graph, String requirementType, RequirementSpec requirementSpec)
     {
         Boolean result = false;
         // search the graph to determine if there is a suitable requirementSpec.
@@ -172,10 +173,21 @@ public class GraphTools {
             {
                 OrientVertex vProvider = (OrientVertex) providers.iterator().next();
                 result = true;
-            }
 
+                // update matches.
+                HashMap<String,String> matches = new HashMap<String,String>();
+                matches.put ("node-key",vProvider.getProperty("key").toString());
+                requirementSpec.setMatches(matches);
+            }
         }
 
-        return result;
+        if (!result)
+        {
+            return null;
+        }
+        else
+        {
+            return requirementSpec;
+        }
     }
 }
