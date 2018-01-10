@@ -69,6 +69,24 @@
             },
             "additionalProperties": false
         },
+		"node": {
+		    "type": "object",
+			"name": {
+			   "type": "string"
+			},
+			"attributes": {
+				"type": "string",
+				"additionalProperties": {
+					"type": "string"
+				}
+			},
+			"labels": {
+				"type": "string",
+				"additionalProperties": {
+					"type": "string"
+				}
+			}
+		},					
         "selector" : { 
             "type" : "object",
             "properties": {

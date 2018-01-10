@@ -109,6 +109,7 @@ public class DeploymentsController {
 
             deploymentSpecificationPlan.setName("New Deployment Specification Plan " + dateFormat.format(cal.getTime()));
             deploymentSpecificationPlan.setArtifacts(artifacts);
+            deploymentSpecificationPlan.setDeployed(false);
 
             if (graph.getVertexType("DeploymentSpecificationPlan") == null)
             {
