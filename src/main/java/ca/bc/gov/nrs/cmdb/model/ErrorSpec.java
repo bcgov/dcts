@@ -14,25 +14,29 @@ public class ErrorSpec {
 
 //  @Property("module_name")
 
+  @JsonProperty("quantifier")
   private String code = null;
 
-  @JsonProperty("quantifier")
+
   public String getCode() { return code; }
   public void setCode(String code ) { this.code = code; }
 
-  private String message = null;
   @JsonProperty("message")
+  private String message = null;
+
   public String getMessage() { return message; }
   public void setMessage(String message ) { this.message = message; }
 
-  private String target = null;
   @JsonProperty("target")
+  private String target = null;
+
   public String getTarget() { return target; }
   public void setTarget(String target ) { this.target = target; }
 
+  @JsonProperty("details")
   private ErrorSpec[] details = null;
 
-  @JsonProperty("details")
+
   public ErrorSpec[] getDetails() { return details; }
   public void setDetails(ErrorSpec[] details ) { this.details = details; }
 

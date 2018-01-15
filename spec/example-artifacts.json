@@ -7,19 +7,15 @@
       "version": "11.1.1",
       "provides": [
 	    {
-	      "server":
-	      {
-            "interface": "com.oracle.weblogic",
-            "version": "10.3.6"         
-          }
+	      "name": "server",
+          "interface": "com.oracle.weblogic",
+          "version": "10.3.6"         
 		},
 		{
-		  "server":
-		  {
-		    "interface": "com.oracle.forms",
-		    "version": "???",
-		    "layer":"server"
-		  }
+		  "name": "server":
+		  "interface": "com.oracle.forms",
+		  "version": "???",
+		  "layer":"server"
 		},
 		{
 		  "server": {
@@ -28,12 +24,10 @@
           }
 		},
 		{
-		  "server":
-		  {
-            "interface": "com.oracle.weblogic.admin",
-            "version": "10.3.6",          
-            "attributes": ["url"]
-          }
+		  "name" : "server",
+          "interface": "com.oracle.weblogic.admin",
+          "version": "10.3.6",          
+          "attributes": { "url" : "example.url" }
 		}
       ],
       "requires": {
@@ -54,7 +48,7 @@
           "interface": "ca.bc.gov.nrs.titan.nrs-titan-ds"          
         }
       ],
-      "requires": [
+      "requires": {
         "database":{
           "interface": "ca.bc.gov.nrs.titan.nrs-titan-db",
           "quantifier": "1",
@@ -71,7 +65,7 @@
           "quantifier": "?",
           "scope": "deployment"
         }
-      ]	  
+      }	  
     },{
       "system": "TITAN",
       "name": "ca.bc.gov.nrs.titan.nrs-titan-api",
@@ -82,7 +76,7 @@
           "interface": "ca.bc.gov.nrs.titan.nrs-titan-rest-ear",        
         }
       ],
-      "requires": [
+      "requires": {
         "api-route":{
           "interface": "ca.bc.gov.nrs.titan.nrs-titan-api-route",
           "version": "1.0",
@@ -103,7 +97,7 @@
           "selector":{"name":"com.oracle.weblogic.credential.deployer"},
           "scope": "deployment"
         }
-      ]
+      }
     },{
       "system": "TITAN",
       "name": "ca.bc.gov.nrs.titan.nrs-titan-ui",
@@ -112,7 +106,7 @@
           "interface": "ca.bc.gov.nrs.titan.nrs-titan-ui"          
         ]
       },
-      "requires": [
+      "requires": {
         "ui-route": {
           "interface": "ca.bc.gov.nrs.titan.nrs-titan-ui-route",
           "resolution": "optional",
@@ -128,6 +122,6 @@
           "selector":{"name":"com.oracle.weblogic.credential.deployer"},
           "scope": "deployment"
         }
-      ]      
+      }      
     }
 ]

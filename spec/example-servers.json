@@ -2,7 +2,7 @@
   {
     "name": "BEAVERTON",
     "attributes": {
-      "fqn":"BEAVERTON.bcgov",
+      "fqdn":"BEAVERTON.bcgov",
       "all_ipv4_addresses":[],
       "all_ipv6_addresses":[],
       "default_ipv4":"10.0.10.15",
@@ -24,9 +24,7 @@
           },
           "ipv6": []
         }
-      }
-    },
-    "labels": {
+      },
         "environment":"delivery",
         "dc-provider":"hp",
         "dc-region":"calgary",
@@ -35,7 +33,7 @@
   },{
     "name": "TROY",
     "attributes": {
-      "fqn":"TROY.bcgov",
+      "fqdn":"TROY.bcgov",
       "all_ipv4_addresses":[],
       "all_ipv6_addresses":[],
       "default_ipv4":"10.0.20.15",
@@ -57,18 +55,16 @@
           },
           "ipv6": []
         }
-      }
-    },
-    "labels": {
-        "environment":"test",
-        "dc-provider":"hp",
-        "dc-region":"calgary",
-        "reserved-for": "OFM11g"
+      },
+      "environment":"test",
+      "dc-provider":"hp",
+      "dc-region":"calgary",
+      "reserved-for": "OFM11g"
     }
   },{
     "name": "NICHBURG",
     "attributes": {
-      "fqn":"NICHBURG.bcgov",
+      "fqdn":"NICHBURG.bcgov",
       "all_ipv4_addresses":[],
       "all_ipv6_addresses":[],
       "default_ipv4": "10.0.40.15",
@@ -90,13 +86,11 @@
           },
           "ipv6": []
         }
-      }
-    },
-    "labels": {
-        "environment":"production",
-        "dc-provider":"hp",
-        "dc-region":"kamloops",
-        "reserved-for": "OFM11g"
+      },
+      "environment":"production",
+      "dc-provider":"hp",
+      "dc-region":"kamloops",
+      "reserved-for": "OFM11g"
     }
   }
 ]

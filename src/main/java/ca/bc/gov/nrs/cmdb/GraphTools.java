@@ -152,6 +152,7 @@ public class GraphTools {
         return result;
     }
 
+
     public static RequirementSpec HaveRequirement (OrientGraphNoTx graph, String requirementType, RequirementSpec requirementSpec)
     {
         Boolean result = false;
@@ -178,6 +179,10 @@ public class GraphTools {
                 HashMap<String,String> matches = new HashMap<String,String>();
                 matches.put ("node-key",vProvider.getProperty("key").toString());
                 requirementSpec.setMatches(matches);
+
+                // update expand.  expand is an array of strings.
+                
+
             }
         }
 

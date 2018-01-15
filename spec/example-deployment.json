@@ -1,0 +1,60 @@
+{
+  "key": "59534e7a-e4e0-4ed3-a7fc-ffb2e08587e6",
+  "deployed": true,
+  "artifacts": [
+    {
+      "key": "f83c28ed-af70-450c-8d24-3b5eab1ea3b0",
+      "name": "com.oracle.ofm",
+      "shortName": "Oracle Fusion Middleware",
+      "system": "OFM",
+      "description": "Oracle's complete family of application infrastructure products—from the #1 Java application server to SOA and enterprise portals—are integrated with Oracle Applications and technologies to speed implementation and lower the cost of management and change. Best-of-breed offerings and unique hot-pluggable capabilities provide a foundation for innovation and extend the business value of existing investments.",
+      "url": "",
+      "vendor": "Oracle",
+      "vendorContact": "support@oracle.com",
+      "version": "11.1.1",
+      "provides": null,
+      "requires": {
+        "host": {
+		  "selector":{"os.family":"SunOs", "os.version":"[10,11)", "reserved-for":"ofm11g"}, "quantifier":"+"},
+          "quantifier": "?",
+          "expand":["url"],
+          "scope": "deployment"		          
+          "resolution": null,
+          "artifact-key": null,
+          "expand": {
+            "fqdn":"BEAVERTON.bcgov"
+          },
+          "scope": "deployment",
+          "version": null,
+          "error": null,
+          "matches": {
+            "node-key": "eabe3478-60a7-4607-953a-e92823ba9967"
+          },
+          "interface": null
+        },
+        "deployer_credential": {
+          "quantifier": "?",
+          "resolution": null,
+          "artifact-key": null,
+          "expand": null,
+          "scope": "deployment",
+          "version": null,
+          "error": null,
+          "matches": {
+            "node-key": "eabe3478-60a7-4607-953a-e92823ba9967"
+          },
+          "interface": null
+        }
+      }
+    }
+  ],
+  "Name": "New Deployment Specification Plan 18/42/11-01:42",
+  "System": null,
+  "SymbolicName": null,
+  "Description": null,
+  "Vendor": null,
+  "Vendor-Contact": null,
+  "version": null,
+  "Export": null,
+  "Import": null
+}

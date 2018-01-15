@@ -1,19 +1,16 @@
-AGRI-NMP
+NRS-CMDB
 ======================
 
 OpenShift Configuration and Deployment
 ----------------
 
-The agri-nmp-tools (Tools) project contains the Build Configurations (bc) and Image Streams (is) that are referenced by the Deployment Configurations.
+The nrs-cmdb-tools (Tools) project contains the Build Configurations (bc) and Image Streams (is) that are referenced by the Deployment Configurations.
 
 The following projects contain the Deployment Configurations (dc) for the various types of deployments:
-- agri-nmp-dev (Development)
-- agri-nmp-test (Test)
-- agri-nmp-prod (Production)
+- nrs-cmdb-dev (Development)
+- nrs-cmdb-test (Test)
+- nrs-cmdb-prod (Production)
  
-In AGRI-NMP there are 2 components that are deployed 
-- .NET Core API Server 
-- .NET Core PDF microservice
 
 
 Steps to configure the deployment:
@@ -34,7 +31,7 @@ Login to the server using the oc command from the page.
 Switch to the Tools project by running:
 `oc project agri-nmp-tools`
 
-`oc process -f https://raw.githubusercontent.com/bcgov/agri-nmp/master/OpenShift/templates/build-template.json | oc create -f -`
+`oc process -f https://raw.githubusercontent.com/bcgov/nrs-cmdb/master/OpenShift/templates/build-template.json | oc create -f -`
 
 This will produce several builds and image streams.
 
@@ -44,17 +41,17 @@ You can edit a build to change the tag.
 
 Once you have images tagged for dev, test or prod you are ready to deploy.
 Open a command prompt and login as above to OpenShift
-Change to the project for the type of deployment you are configuring.  For example, to configure a dev deployment, switch to agri-nmp-dev
+Change to the project for the type of deployment you are configuring.  For example, to configure a dev deployment, switch to nrs-cmdb-dev
 
 In the command prompt, type
-`oc project agri-nmp-dev`
+`oc project nrs-cmdb-dev`
 By default projects do not have permission to access images from other projects.  You will need to grant that.
 Run the following:
 `oc policy add-role-to-user system:image-puller system:serviceaccount:<project_identifier>:default -n <project namespace where project_identifier needs access>`
 
 EXAMPLE - to allow the production project access to the images, run:
 
-`oc policy add-role-to-user system:image-puller system:serviceaccount:agri-nmp-prod:default -n agri-nmp-tools`
+`oc policy add-role-to-user system:image-puller system:serviceaccount:nrs-cmdb-prod:default -n nrs-cmdb-tools`
 
 - Process and create the Environment Template
 - `oc process -f deployment-template.json  -p APP_DEPLOYMENT_TAG=<DEPLOYMENT TAG> | oc create -f -`

@@ -8,6 +8,7 @@ import java.util.Objects;
 public class DeploymentSpec {
 //  @Id
 
+  @JsonProperty("key")
   private String key = null;
 
   public DeploymentSpec key(String key) {
@@ -15,7 +16,7 @@ public class DeploymentSpec {
     return this;
   }
 
-  @JsonProperty("key")
+
   public String getKey() {
     return key;
   }
@@ -27,13 +28,14 @@ public class DeploymentSpec {
   /**
    * The name of the deployment spec.
    **/
+  @JsonProperty("name")
   private String name = null;
   public DeploymentSpec name(String name) {
     this.name = name;
     return this;
   }
 
-  @JsonProperty("name")
+
   public String getName() {
     return name;
   }
