@@ -48,16 +48,10 @@ public class UploadController {
      * @return
      */
 
-
-
-
-
         @PostMapping
     public String Upload(@RequestBody String data)
     {
         gson = new Gson();
-
-
 
         String result = "";
 
@@ -81,7 +75,22 @@ public class UploadController {
             {
                 result = "\"ERROR" + e.toString() + "\"";
             }
+        } else
+        if (uploadSpec.getKind().equalsIgnoreCase("node"))
+        {
+            UploadNodeSpec uploadNodeSpec = gson.fromJson(data, UploadNodeSpec.class);
+
+            Node node = (Node) uploadNodeSpec.getValue();
+            //GraphTools.CreateArtifactVertex (graph, node);
+            try {
+                result = mapper.writeValueAsString(node);
+            }
+            catch (Exception e)
+            {
+                result = "\"ERROR" + e.toString() + "\"";
+            }
         }
+
 
         graph.shutdown();
 
