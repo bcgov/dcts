@@ -42,14 +42,6 @@ $('#getSample').click(function() {
     }, 'json');
 });
 
-$('#getServers').click(function() {
-    // get the example content.
-    $.get( "https://raw.githubusercontent.com/bcgov/nrs-cmdb/develop/spec/example-servers.json", "", function( data ) {
-    var formatted = JSON.stringify(data, undefined, 2);
-        $( "#artifactUpload" ).html( formatted );
-    }, 'json');
-});
-
     // deployment start
     $("#deploymentStartForm").submit(function(e) {
         //prevent Default functionality
@@ -193,7 +185,6 @@ $('#getServers').click(function() {
     </table>
     <input type="submit" value="Upload Data">
     <input type="button" id="getDemoArtifact" value="Get Demo Data">
-    <input type="button" id="getServers" value="Get Servers">
     <input type="button" id="clearAllArtifacts" value="Clear All Artifacts">
 </form>
 <hr/>
