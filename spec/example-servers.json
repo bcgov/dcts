@@ -1,4 +1,6 @@
 [
+  "kind": "node",
+  "value": 
   {
     "name": "BEAVERTON",
     "attributes": {
@@ -30,7 +32,11 @@
         "dc-region":"calgary",
         "reserved-for": "OFM11g"
     }
-  },{
+  },
+  "kind": "node",
+  "value": 
+  
+  {
     "name": "TROY",
     "attributes": {
       "fqdn":"TROY.bcgov",
