@@ -94,7 +94,6 @@ public class UploadController {
                 if (kind.equalsIgnoreCase("artifact"))
                 {
                     UploadArtifactSpec uploadArtifactSpec = gson.fromJson(data, UploadArtifactSpec.class);
-
                     Artifact artifact = gson.fromJson (value, Artifact.class);
                     GraphTools.CreateArtifactVertex (graph, artifact);
 
@@ -103,8 +102,7 @@ public class UploadController {
 
                  else if (kind.equalsIgnoreCase("node")) {
                     Node node = gson.fromJson(value, Node.class);
-
-                    //GraphTools.CreateArtifactVertex (graph, node);
+                    GraphTools.CreateNodeVertex (graph, node);
                     result += gson.toJson(node);
                 }
             }

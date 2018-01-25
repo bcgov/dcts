@@ -43,7 +43,10 @@ public class DeploymentsController {
     @Autowired
     private OrientGraphFactory factory;
 
-
+    public DeploymentsController()
+    {
+        gson = new Gson();
+    }
 
 
     /***
@@ -137,10 +140,8 @@ public class DeploymentsController {
             // done with the graph
             graph.shutdown();
 
-            ObjectMapper mapper = new ObjectMapper();
-
             try {
-                result = mapper.writeValueAsString(deploymentSpecificationPlan);
+                result = gson.toJson(deploymentSpecificationPlan);
             }
             catch (Exception e)
             {
@@ -148,7 +149,7 @@ public class DeploymentsController {
                 newError.setCode("Exception");
                 newError.setMessage(e.toString());
                 newError.setTarget("ObjectMapper");
-                result = newError.toJson();
+                result = gson.toJson(newError);
             }
         }
         else

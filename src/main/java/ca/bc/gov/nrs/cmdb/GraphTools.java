@@ -1,17 +1,18 @@
 package ca.bc.gov.nrs.cmdb;
 
 import ca.bc.gov.nrs.cmdb.model.Artifact;
+import ca.bc.gov.nrs.cmdb.model.Node;
 import ca.bc.gov.nrs.cmdb.model.RequirementSpec;
 import ca.bc.gov.nrs.cmdb.model.SelectorSpec;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class GraphTools {
 
@@ -34,6 +35,7 @@ public class GraphTools {
                 safeVertexPropertySet(vRequirementSpec, "version", requirementSpec.getVersion());
 
                 // add the expand vector.
+
 
                 // create an edge.
                 CreateEdgeIfNotExists(graph,vArtifact,vRequirementSpec, edgeName);
@@ -71,8 +73,6 @@ public class GraphTools {
         }
     }
 
-
-
     public static void safeVertexPropertySet (OrientVertex vertex, String propertyName, String propertyValue)
     {
         if (propertyValue != null)
@@ -89,7 +89,6 @@ public class GraphTools {
         vArtifact.setProperty("name", artifact.getName());
         safeVertexPropertySet(vArtifact, "system",artifact.getSystem());
 
-
         safeVertexPropertySet(vArtifact,"shortName",artifact.getShortName());
         safeVertexPropertySet(vArtifact,"description",artifact.getDescription());
         safeVertexPropertySet(vArtifact,"url",artifact.getUrl());
@@ -104,6 +103,26 @@ public class GraphTools {
 
         return vArtifact;
     }
+
+    public static OrientVertex CreateNodeVertex (OrientGraphNoTx graph, Node node)
+    {
+        // create the item in the graph database.
+        OrientVertex vNode = graph.addVertex("class:Node");
+
+        safeVertexPropertySet(vNode, "key", node.getKey());
+        safeVertexPropertySet(vNode, "name", node.getName());
+
+        Set<Map.Entry<String,JsonElement>> attributes = node.getAttributes().entrySet();
+
+        for (Map.Entry<String,JsonElement> attribute: attributes)
+        {
+            // add the attribute to the object.
+            safeVertexPropertySet(vNode, attribute.getKey(), attribute.getValue().getAsString());
+        }
+
+        return vNode;
+    }
+
 
     public static void CreateVertexTypeIfNotExists(OrientGraphNoTx graph, String name)
     {

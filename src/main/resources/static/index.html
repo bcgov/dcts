@@ -132,7 +132,7 @@ $('#getServers').click(function() {
                 type: 'post',
                 dataType: 'json',
                 contentType: 'application/json',
-                data: $("#artifactUpload").text(),
+                data: $("#deploymentSpec").text(),
                 success: function(data) {
                     var dataAsString = JSON.stringify(data, undefined, 2);
                     var output = $("#outputFinish").text() + "Success!\nResponse:\n" + dataAsString;
@@ -204,7 +204,7 @@ $('#getServers').click(function() {
     <h4>Deployment ID</h4>
     <input type="text" id="deploymentId" name="deploymentId" size="40">
     <h4>Was the deployment successful?</h4>
-    <input type="radio" name="successvalue" value="True" checked>True <input type="radio" name="successvalue" value="False">False
+    <input type="radio" name="successvalue" value="true" checked>True <input type="radio" name="successvalue" value="false">False
     <table border="0">
         <td>
             <h4>Deployment Spec JSON:</h4>
