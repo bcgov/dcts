@@ -42,6 +42,14 @@ $('#getSample').click(function() {
     }, 'json');
 });
 
+$('#getServers').click(function() {
+    // get the example content.
+    $.get( "https://raw.githubusercontent.com/GeorgeWalker/nrs-cmdb/develop/spec/example-servers.json#", "", function( data ) {
+    var formatted = JSON.stringify(data, undefined, 2);
+        $( "#artifactUpload" ).html( formatted );
+    }, 'json');
+});
+
     // deployment start
     $("#deploymentStartForm").submit(function(e) {
         //prevent Default functionality
@@ -98,8 +106,8 @@ $('#getSample').click(function() {
 
                 },
                 error: function (xhr, textStatus, thrownError) {
-                    var output = $("#outputStart").text() + "ERROR!\nResponse:\n" + textStatus + "\n" + thrownError;
-                    $("#outputStart").html( output );
+                    var output = $("#outputArtifactUpload").text() + "ERROR!\nResponse:\n" + textStatus + "\n" + thrownError;
+                    $("#outputArtifactUpload").html( output );
 
                 }
         });
@@ -124,13 +132,11 @@ $('#getSample').click(function() {
                 type: 'post',
                 dataType: 'json',
                 contentType: 'application/json',
-                data: $("#artifactUpload").text(),
+                data: $("#deploymentSpec").text(),
                 success: function(data) {
                     var dataAsString = JSON.stringify(data, undefined, 2);
                     var output = $("#outputFinish").text() + "Success!\nResponse:\n" + dataAsString;
                     $("#outputFinish").html( output );
-
-
                 },
                 error: function (xhr, textStatus, thrownError) {
                     var output = $("#outputFinish").text() + "ERROR!\nResponse:\n" + textStatus + "\n" + thrownError;
@@ -185,6 +191,7 @@ $('#getSample').click(function() {
     </table>
     <input type="submit" value="Upload Data">
     <input type="button" id="getDemoArtifact" value="Get Demo Data">
+    <input type="button" id="getServers" value="Get Servers">
     <input type="button" id="clearAllArtifacts" value="Clear All Artifacts">
 </form>
 <hr/>
@@ -194,10 +201,10 @@ $('#getSample').click(function() {
 
 <form id="deploymentFinishForm" method="post" action="deployments">
 
-            <h4>Deployment ID</h4>
-            <input type="text" id="deploymentId" name="deploymentId" size="40">
-            <h4>Was the deployment successful?</h4>
-            <input type="radio" name="successvalue" value="True" checked>True <input type="radio" name="successvalue" value="False">False
+    <h4>Deployment ID</h4>
+    <input type="text" id="deploymentId" name="deploymentId" size="40">
+    <h4>Was the deployment successful?</h4>
+    <input type="radio" name="successvalue" value="true" checked>True <input type="radio" name="successvalue" value="false">False
     <table border="0">
         <td>
             <h4>Deployment Spec JSON:</h4>
