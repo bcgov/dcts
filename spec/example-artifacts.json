@@ -102,9 +102,10 @@
       "system": "TITAN",
       "name": "ca.bc.gov.nrs.titan.nrs-titan-ui",
       "version": "1.0.0",
-	  "provides": ["server":{
+	  "provides": {
+	    "server":{
           "interface": "ca.bc.gov.nrs.titan.nrs-titan-ui"          
-        ]
+        }
       },
       "requires": {
         "ui-route": {
