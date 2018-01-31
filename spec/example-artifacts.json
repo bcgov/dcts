@@ -73,7 +73,7 @@
       "provides": {
 	    "server":
 	    {
-          "interface": "ca.bc.gov.nrs.titan.nrs-titan-rest-ear",        
+          "interface": "ca.bc.gov.nrs.titan.nrs-titan-rest-ear"        
         }
       },
       "requires": {
