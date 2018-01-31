@@ -6,24 +6,24 @@
       "vendor": "Oracle",
       "version": "11.1.1",
       "provides": [
-	    {
-	      "name": "server",
+	    "server" : 
+		{
           "interface": "com.oracle.weblogic",
           "version": "10.3.6"         
 		},
+		"server" :
 		{
-		  "name": "server",
 		  "interface": "com.oracle.forms",
 		  "version": "???",
 		  "layer":"server"
 		},
-		{
-		  "name" : "server", 
+		"server" :
+		{		
             "interface": "com.oracle.reports",
             "version": "???"                    
 		},
-		{
-		  "name" : "server",
+		"server" : {
+		  
           "interface": "com.oracle.weblogic.admin",
           "version": "10.3.6",          
           "attributes": { "url" : "example.url" }
