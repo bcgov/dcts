@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.*;
 import com.orientechnologies.orient.core.command.OCommandRequest;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
-import com.sun.tools.javac.code.Attribute;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
@@ -64,14 +63,6 @@ public class UploadController {
 
         JsonArray uploadData = (JsonArray) new JsonParser().parse(data);
 
-        //JsonArray uploadData = new JsonPar
-        //ser().parse(data).getAsJsonArray();
-        //for (JsonElement jsonElement : arry) {
-        //    list.add(gson.fromJson(jsonElement, cls));
-        //}
-
-        //UploadSpec[] uploadSpecs = gson.fromJson(data, UploadSpec[].class);
-
         boolean first = true;
 
         for (JsonElement element : uploadData)
@@ -93,10 +84,8 @@ public class UploadController {
 
                 if (kind.equalsIgnoreCase("artifact"))
                 {
-                    UploadArtifactSpec uploadArtifactSpec = gson.fromJson(data, UploadArtifactSpec.class);
-                    Artifact artifact = gson.fromJson (value, Artifact.class);
+                    Artifact artifact = gson.fromJson(value, Artifact.class);
                     GraphTools.CreateArtifactVertex (graph, artifact);
-
                     result += gson.toJson(artifact);
                 }
 

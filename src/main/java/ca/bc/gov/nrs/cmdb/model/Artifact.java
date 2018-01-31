@@ -2,6 +2,7 @@ package ca.bc.gov.nrs.cmdb.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.AbstractMap;
@@ -125,21 +126,21 @@ public class Artifact {
     this.version = version;
   }
 
-  private ArrayList<HashMap<String, RequirementSpec>> provides = null;
   @JsonProperty("provides")
-  public ArrayList<HashMap<String, RequirementSpec>>  getProvides() {
+  private JsonObject provides;
+  public JsonObject getProvides() {
     return provides;
   }
-  public void setProvides(ArrayList<HashMap<String, RequirementSpec>> provides) {
+  public void setProvides(JsonObject provides) {
     this.provides = provides;
   }
 
-  private HashMap<String, RequirementSpec> requires = null;
   @JsonProperty("requires")
-  public HashMap<String, RequirementSpec>  getRequires() {
+  private JsonObject requires;
+  public JsonObject  getRequires() {
     return requires;
   }
-  public void setRequires (HashMap<String, RequirementSpec>  requires) {
+  public void setRequires (JsonObject  requires) {
     this.requires = requires;
   }
 

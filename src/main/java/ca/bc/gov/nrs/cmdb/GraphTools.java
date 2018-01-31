@@ -6,6 +6,7 @@ import ca.bc.gov.nrs.cmdb.model.RequirementSpec;
 import ca.bc.gov.nrs.cmdb.model.SelectorSpec;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
@@ -17,61 +18,35 @@ import java.util.*;
 public class GraphTools {
 
 
-    public static void updatedRequirements(OrientGraphNoTx graph, String edgeName, OrientVertex vArtifact, HashMap<String, RequirementSpec> requirementHash)
+    public static void updatedRequirements(OrientGraphNoTx graph, String edgeName, OrientVertex vArtifact, JsonObject requirementHash)
     {
         if (requirementHash != null)
         {
             // start by verifying that the RequirementSpec exists.
             CreateVertexTypeIfNotExists( graph, "RequirementSpec");
 
-            for (String requirementType : requirementHash.keySet())
+            // loop through the set of requirements.
+            Set<Map.Entry<String,JsonElement>> requirements = requirementHash.entrySet();
+
+            for (Map.Entry<String,JsonElement> requirement: requirements)
             {
-                RequirementSpec requirementSpec = requirementHash.get(requirementType);
-                OrientVertex vRequirementSpec = CreateVertexIfNotExists (graph, "RequirementSpec", requirementSpec.getKey(requirementType));
-                // Set properties.
-                safeVertexPropertySet(vRequirementSpec, "quantifier", requirementSpec.getQuantifier());
-                safeVertexPropertySet(vRequirementSpec, "scope", requirementSpec.getScope());
-                safeVertexPropertySet(vRequirementSpec, "interface", requirementSpec.getInterface());
-                safeVertexPropertySet(vRequirementSpec, "version", requirementSpec.getVersion());
-
-                // add the expand vector.
-
-
-                // create an edge.
-                CreateEdgeIfNotExists(graph,vArtifact,vRequirementSpec, edgeName);
-            }
-        }
-    }
-
-    public static void updatedRequirements(OrientGraphNoTx graph, String edgeName, OrientVertex vArtifact, ArrayList<HashMap<String, RequirementSpec>> requirements)
-    {
-        if (requirements != null && requirements.size() > 0)
-        {
-            // start by verifying that the RequirementSpec exists.
-            CreateVertexTypeIfNotExists( graph, "RequirementSpec");
-
-            for (HashMap<String, RequirementSpec> item : requirements)
-            {
-                for (String requirementType : item.keySet())
+                String key = UUID.randomUUID().toString();
+                OrientVertex vRequirementSpec = CreateVertexIfNotExists (graph, "RequirementSpec", key);
+                safeVertexPropertySet(vRequirementSpec, "type", requirement.getKey());
+                // now add all of the other properties.
+                JsonObject requirementProperties = (JsonObject) requirement.getValue();
+                Set<Map.Entry<String,JsonElement>> properties = requirementProperties.entrySet();
+                for (Map.Entry<String,JsonElement> property: properties)
                 {
-                    RequirementSpec requirementSpec = item.get(requirementType);
-                    OrientVertex vRequirementSpec = CreateVertexIfNotExists (graph, "RequirementSpec", requirementSpec.getKey(requirementType));
-
-                    // Set properties.
-                    safeVertexPropertySet(vRequirementSpec, "quantifier", requirementSpec.getQuantifier());
-                    safeVertexPropertySet(vRequirementSpec, "scope", requirementSpec.getScope());
-                    safeVertexPropertySet(vRequirementSpec, "interface", requirementSpec.getInterface());
-                    safeVertexPropertySet(vRequirementSpec, "version", requirementSpec.getVersion());
-
-                    // add the expand vector.
-
-                    // create an edge.
-                    CreateEdgeIfNotExists(graph,vArtifact,vRequirementSpec, edgeName);
+                    safeVertexPropertySet(vRequirementSpec, property.getKey(), property.getValue().getAsString());
                 }
+                // create an edge linking the artifact.
+                CreateEdgeIfNotExists(graph,vArtifact,vRequirementSpec, edgeName);
 
             }
         }
     }
+
 
     public static void safeVertexPropertySet (OrientVertex vertex, String propertyName, String propertyValue)
     {
@@ -172,7 +147,7 @@ public class GraphTools {
     }
 
 
-    public static RequirementSpec HaveRequirement (OrientGraphNoTx graph, String requirementType, RequirementSpec requirementSpec)
+    public static JsonObject HaveRequirement (OrientGraphNoTx graph, Map.Entry<String,JsonElement> requirement)
     {
         Boolean result = false;
         // search the graph to determine if there is a suitable requirementSpec.
@@ -180,8 +155,9 @@ public class GraphTools {
         OrientVertex vResult = null;
         // lookup the RequirementSpec.
 
+        JsonObject requirementSpec = requirement.getValue().getAsJsonObject();
 
-        Iterable<Vertex> Components = graph.getVertices("RequirementSpec.key", requirementSpec.getKey(requirementType));
+        Iterable<Vertex> Components = graph.getVertices("RequirementSpec.type", requirement.getKey());
         if (Components != null && Components.iterator().hasNext())
         {
             vResult = (OrientVertex) Components.iterator().next();
@@ -195,9 +171,10 @@ public class GraphTools {
                 result = true;
 
                 // update matches.
-                HashMap<String,String> matches = new HashMap<String,String>();
-                matches.put ("node-key",vProvider.getProperty("key").toString());
-                requirementSpec.setMatches(matches);
+                JsonObject matches = new JsonObject();
+                matches.add ("node-key", new JsonPrimitive(vProvider.getProperty("key").toString()));
+
+                requirementSpec.add("matches", matches);
 
                 // update expand.  expand is an array of strings.
                 

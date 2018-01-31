@@ -37,6 +37,8 @@ $('#clearAllArtifacts').click(function() {
 $('#getSample').click(function() {
     // get the example content.
     $.get( "artifacts/getTemplate", "", function( data ) {
+    //$.get( "https://raw.githubusercontent.com/GeorgeWalker/nrs-cmdb/develop/spec/example-artifacts.json#", "", function( data ) {
+
     var formatted = JSON.stringify(data, undefined, 2);
         $( "#artifact" ).html( formatted );
     }, 'json');

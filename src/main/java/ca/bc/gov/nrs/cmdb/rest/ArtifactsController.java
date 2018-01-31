@@ -11,6 +11,9 @@ import ca.bc.gov.nrs.cmdb.model.SelectorSpec;
 import ca.bc.gov.nrs.cmdb.model.UploadSpec;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.orientechnologies.orient.core.command.OCommandRequest;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.tinkerpop.blueprints.Vertex;
@@ -124,10 +127,18 @@ public class ArtifactsController {
             credential.setQuantifier("?");
             credential.setScope("deployment");
 
-            HashMap<String, RequirementSpec>  requiresHash = new HashMap<String, RequirementSpec> ();
+            JsonObject requiresHash = new JsonObject();
 
-            requiresHash.put ("host", host);
-            requiresHash.put ("deployer_credential", credential);
+            // convert the host object to a JsonObject
+            JsonObject hostObject = gson.fromJson( gson.toJson(host), JsonObject.class);
+
+            requiresHash.add("host", hostObject);
+
+            // convert the credential object to a JsonObject
+            JsonObject credentialObject = gson.fromJson( gson.toJson(credential), JsonObject.class);
+
+
+            requiresHash.add ("deployerCredentials", credentialObject);
             artifact.setRequires(requiresHash);
 
         }
@@ -153,9 +164,12 @@ public class ArtifactsController {
 
             requirementSpec.setScope("deployment");
 
-            HashMap<String, RequirementSpec>  requiresHash = new HashMap<String, RequirementSpec> ();
+            JsonObject  requiresHash = new JsonObject ();
 
-            requiresHash.put ("host", requirementSpec);
+            // convert the host object to a JsonObject
+            JsonObject hostObject = gson.fromJson( gson.toJson(requirementSpec), JsonObject.class);
+
+            requiresHash.add ("host", hostObject);
 
             artifact.setRequires(requiresHash);
 
@@ -169,18 +183,13 @@ public class ArtifactsController {
             serverSpec1.setInterface("com.oracle.forms");
             serverSpec1.setVersion("???");
 
+            JsonObject providesList = new JsonObject();
 
-            ArrayList<HashMap<String, RequirementSpec>> providesList = new ArrayList<HashMap<String, RequirementSpec>>();
+            JsonObject serverSpec1Object = gson.fromJson( gson.toJson(serverSpec1), JsonObject.class);
+            JsonObject serverSpec2Object = gson.fromJson( gson.toJson(serverSpec2), JsonObject.class);
 
-            HashMap<String, RequirementSpec> pairServerSpec1 = new HashMap<String, RequirementSpec>();
-            pairServerSpec1.put("server",serverSpec1);
-
-            HashMap<String, RequirementSpec> pairServerSpec2 = new  HashMap<String, RequirementSpec>();
-            pairServerSpec2.put("server",serverSpec2);
-
-
-            providesList.add (pairServerSpec1);
-            providesList.add (pairServerSpec2);
+            providesList.add ("server", serverSpec1Object);
+            providesList.add ("server", serverSpec2Object);
 
             artifact.setProvides( providesList );
 
@@ -198,7 +207,7 @@ public class ArtifactsController {
 
             Artifact[] artifacts = new Artifact[1];
             artifacts[0] = artifact;
-            result = mapper.writeValueAsString(artifacts);
+            result = gson.toJson(artifacts);
         }
         catch (Exception e)
         {
@@ -256,35 +265,27 @@ public class ArtifactsController {
         credential.setQuantifier("?");
         credential.setScope("deployment");
 
-        HashMap<String, RequirementSpec> hostEntry = new HashMap<String, RequirementSpec>();
-        hostEntry.put ("host", host);
-        HashMap<String, RequirementSpec> deployerCredentials = new HashMap<String, RequirementSpec>();
-        deployerCredentials.put ("deployer_credential", credential);
 
-        ArrayList<HashMap<String, RequirementSpec>> providesList = new ArrayList<HashMap<String, RequirementSpec>>();
+        JsonObject providesList = new JsonObject();
+        JsonObject hostObject = gson.fromJson( gson.toJson(host), JsonObject.class);
+        JsonObject credentialObject = gson.fromJson( gson.toJson(credential), JsonObject.class);
 
-        providesList.add (hostEntry);
-        providesList.add (deployerCredentials);
+        providesList.add ("host", hostObject);
+        providesList.add ("deployerCredentials", credentialObject);
 
         artifact.setProvides(providesList);
 
         // setup an upload spec.
 
-        UploadSpec uploadSpec = new UploadSpec();
-        uploadSpec.setKind("artifact");
-        uploadSpec.setValue(artifact);
+        UploadSpec[] uploadSpec = new UploadSpec[1];
 
-        // return the result
-        //return result.toJson();//gson.toJson(result);
-        ObjectMapper mapper = new ObjectMapper();
-        String result = null;
-        try {
-            result = mapper.writeValueAsString(uploadSpec);
-        }
-        catch (Exception e)
-        {
-            result = "\"ERROR" + e.toString() + "\"";
-        }
+        uploadSpec[0] = new UploadSpec();
+        uploadSpec[0].setKind("artifact");
+        uploadSpec[0].setValue(artifact);
+
+
+
+        String result = gson.toJson(uploadSpec);
         return result;
 
         }

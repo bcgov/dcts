@@ -8,6 +8,8 @@ package ca.bc.gov.nrs.cmdb.rest;
 import ca.bc.gov.nrs.cmdb.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientEdge;
@@ -55,8 +57,9 @@ public class DeploymentsController {
      */
     @PostMapping("/start")
 
-    public ResponseEntity<String> StartDeployment(@RequestBody Artifact[] artifacts)
+    public ResponseEntity<String> StartDeployment(@RequestBody String rawData)
     {
+        Artifact[] artifacts = gson.fromJson(rawData,Artifact[].class);
         OrientGraphNoTx graph =  factory.getNoTx();
 
         String result = null;
@@ -68,14 +71,17 @@ public class DeploymentsController {
 
         for(Artifact input : artifacts)
         {
-            HashMap<String, RequirementSpec> requiresHash = input.getRequires();
+            JsonObject requirementHash = input.getRequires();
 
-            for (String requirementKey : requiresHash.keySet())
+            JsonObject updatedRequirements = new JsonObject();
+
+            // loop through the set of requirements.
+            Set<Map.Entry<String,JsonElement>> requirements = requirementHash.entrySet();
+
+            for (Map.Entry<String,JsonElement> requirement: requirements)
             {
-                RequirementSpec requirementSpec = requiresHash.get(requirementKey);
-
                 // determine if we have a match for the requirement spec.
-                RequirementSpec haveRequirement =  HaveRequirement (graph, requirementKey, requirementSpec);
+                JsonObject haveRequirement = HaveRequirement (graph, requirement);
 
                 if (haveRequirement == null)
                 {
@@ -83,22 +89,26 @@ public class DeploymentsController {
 
                     ErrorSpec newError = new ErrorSpec();
                     newError.setCode("RequirementNotMet");
-                    newError.setMessage("Requirement " + requirementKey + " not met.");
+                    newError.setMessage("Requirement " + requirement.getKey() + " not met.");
                     newError.setTarget("Deployment-Error-" + errorCount);
                     errorList.add(newError);
-                    requirementSpec.setError(newError);
+
+                    JsonObject unmetRequirementObject = requirement.getValue().getAsJsonObject();
+                    JsonObject errorObject = gson.fromJson(gson.toJson(newError),JsonObject.class);
+                    unmetRequirementObject.add("error", errorObject);
+
+                    updatedRequirements.add (requirement.getKey(), unmetRequirementObject);
+
                 }
-                else
+                else  // update the object to indicate that the requirement is met.
                 {
-                    requiresHash.put (requirementKey,haveRequirement );
+                    updatedRequirements.add (requirement.getKey(), haveRequirement);
                 }
-
-
-
 
             }
+            // swap in the updatedRequirements.
+            input.setRequires(updatedRequirements);
         }
-
 
         if (errorList.size() == 0)
         {
@@ -176,8 +186,11 @@ public class DeploymentsController {
     }
 
     @PostMapping("/{deploymentId}/finish")
-    public ResponseEntity<String> FinishDeployment(@PathVariable("deploymentId") String deploymentId, @RequestParam(required = true) Boolean success, @RequestBody DeploymentSpecificationPlan deploymentSpecificationPlan )
+    public ResponseEntity<String> FinishDeployment(@PathVariable("deploymentId") String deploymentId, @RequestParam(required = true) Boolean success, @RequestBody String rawData )
     {
+        // need to use gson to parse as fasterjackson cannot understand the JsonObject data.
+
+        DeploymentSpecificationPlan deploymentSpecificationPlan = gson.fromJson(rawData, DeploymentSpecificationPlan.class);
         OrientGraphNoTx graph =  factory.getNoTx();
 
 
@@ -225,15 +238,7 @@ public class DeploymentsController {
         graph.shutdown();
 
 
-        ObjectMapper mapper = new ObjectMapper();
-        String result = null;
-        try {
-            result = mapper.writeValueAsString(deploymentSpecificationPlan);
-        }
-        catch (Exception e)
-        {
-            result = "ERROR" + e.toString();
-        }
+        String result = gson.toJson(deploymentSpecificationPlan);
 
         // return the result
         final HttpHeaders httpHeaders= new HttpHeaders();
