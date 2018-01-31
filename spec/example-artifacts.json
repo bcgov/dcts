@@ -5,9 +5,10 @@
       "description": "Oracle's complete family of application infrastructure products—from the #1 Java application server to SOA and enterprise portals—are integrated with Oracle Applications and technologies to speed implementation and lower the cost of management and change. Best-of-breed offerings and unique hot-pluggable capabilities provide a foundation for innovation and extend the business value of existing investments.",
       "vendor": "Oracle",
       "version": "11.1.1",
-      "provides": [
+      "provides": {
 	    "server" : 
-		{
+		{ 
+		
           "interface": "com.oracle.weblogic",
           "version": "10.3.6"         
 		},
@@ -28,7 +29,7 @@
           "version": "10.3.6",          
           "attributes": { "url" : "example.url" }
 		}
-      ],
+      },
       "requires": {
         "host": {
           "selector":{"selector":{"os.family":"SunOs", "os.version":"[10,11)", "reserved-for":"ofm11g"}, "quantifier":"+"},
@@ -41,12 +42,12 @@
       "system": "TITAN",
       "name": "ca.bc.gov.nrs.titan.nrs-titan-ds",
       "version": "1.0.0",
-      "provides": [
+      "provides": {
 	    "server" :
         {
           "interface": "ca.bc.gov.nrs.titan.nrs-titan-ds"          
         }
-      ],
+      },
       "requires": {
         "database":{
           "interface": "ca.bc.gov.nrs.titan.nrs-titan-db",
@@ -69,12 +70,12 @@
       "system": "TITAN",
       "name": "ca.bc.gov.nrs.titan.nrs-titan-api",
       "version": "1.0.0",
-      "provides": [
+      "provides": {
 	    "server":
 	    {
           "interface": "ca.bc.gov.nrs.titan.nrs-titan-rest-ear",        
         }
-      ],
+      },
       "requires": {
         "api-route":{
           "interface": "ca.bc.gov.nrs.titan.nrs-titan-api-route",
