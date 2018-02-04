@@ -11,6 +11,15 @@
 
 $(function() {
 
+$('#clearAll').click(function() {
+    // clear the database
+    $.get( "graph/reset", "", function( data ) {
+        alert ('Cleared Graph - Response was ' + data);
+}, 'json');
+
+});
+
+
 $('#getDemoArtifact').click(function() {
         // get the demo content.
     $.get( "artifacts/getDemoArtifact", "", function( data ) {
@@ -224,7 +233,7 @@ $('#getServers').click(function() {
 <hr/>
 
 <form id="reset" method="get" action="artifacts/resetTemplate" >
-    <input type="submit" value="Reset Artifact Template">
+    <input type="submit" value="Reset Artifact Template"> <input type="button" id=clearAll value="Clear Graph Database">
 </form>
 
 </body>

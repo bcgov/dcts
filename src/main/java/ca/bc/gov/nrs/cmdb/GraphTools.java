@@ -4,6 +4,7 @@ import ca.bc.gov.nrs.cmdb.model.Artifact;
 import ca.bc.gov.nrs.cmdb.model.Node;
 import ca.bc.gov.nrs.cmdb.model.RequirementSpec;
 import ca.bc.gov.nrs.cmdb.model.SelectorSpec;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -56,6 +57,59 @@ public class GraphTools {
         }
     }
 
+
+    public static void createLinkedVertex (OrientGraphNoTx graph, OrientVertex vertex, String propertyName, JsonObject jsonObject)
+    {
+        if (jsonObject != null)
+        {
+            // create the linked vertex.
+            OrientVertex vNew = graph.addVertex("class:" + propertyName);
+            vertex.addEdge("has", vNew);
+            // now add all of the element properties to the new object.
+            Set<Map.Entry<String,JsonElement>> attributes = jsonObject.entrySet();
+
+            for (Map.Entry<String,JsonElement> attribute: attributes)
+            {
+                JsonElement element = attribute.getValue();
+                // add the attribute to the object.
+                String key = attribute.getKey();
+                if (element.isJsonPrimitive())
+                {
+                    String value = element.getAsString();
+                    safeVertexPropertySet(vNew, key, value);
+                } else if (element.isJsonObject())
+                {
+                    createLinkedVertex(graph, vNew, key, element.getAsJsonObject());
+                } else if (element.isJsonArray())
+                {
+                    JsonArray items = element.getAsJsonArray();
+                    String values = "";
+                    for (JsonElement item : items)
+                    {
+                        if (item.isJsonObject())
+                        {
+                            createLinkedVertex(graph, vNew, key, item.getAsJsonObject());
+                        }
+                        else if (item.isJsonPrimitive())
+                        {
+                            if (values.length() > 0)
+                            {
+                                values += ",";
+                            }
+                            values += item.getAsString();
+                        }
+                    }
+                    if (values.length() > 0)
+                    {
+                        safeVertexPropertySet(vNew, key, values);
+                    }
+                }
+            }
+        }
+    }
+
+
+
     public static OrientVertex CreateArtifactVertex (OrientGraphNoTx graph, Artifact artifact)
     {
         // create the item in the graph database.
@@ -79,6 +133,44 @@ public class GraphTools {
         return vArtifact;
     }
 
+    public static void ProcessAttribute (OrientGraphNoTx graph, OrientVertex vNode, Map.Entry<String,JsonElement> attribute)
+    {
+        JsonElement element = attribute.getValue();
+        // add the attribute to the object.
+        String key = attribute.getKey();
+        if (element.isJsonPrimitive())
+        {
+            String value = element.getAsString();
+            safeVertexPropertySet(vNode, key, value);
+        } else if (element.isJsonObject())
+        {
+            createLinkedVertex(graph, vNode, key, element.getAsJsonObject());
+        } else if (element.isJsonArray())
+        {
+            JsonArray items = element.getAsJsonArray();
+            String values = "";
+            for (JsonElement item : items)
+            {
+                if (item.isJsonObject())
+                {
+                    createLinkedVertex(graph, vNode, key, item.getAsJsonObject());
+                }
+                else if (item.isJsonPrimitive())
+                {
+                    if (values.length() > 0)
+                    {
+                        values += ",";
+                    }
+                    values += item.getAsString();
+                }
+            }
+            if (values.length() > 0)
+            {
+                safeVertexPropertySet(vNode, key, values);
+            }
+        }
+    }
+
     public static OrientVertex CreateNodeVertex (OrientGraphNoTx graph, Node node)
     {
         // create the item in the graph database.
@@ -89,10 +181,8 @@ public class GraphTools {
 
         Set<Map.Entry<String,JsonElement>> attributes = node.getAttributes().entrySet();
 
-        for (Map.Entry<String,JsonElement> attribute: attributes)
-        {
-            // add the attribute to the object.
-            safeVertexPropertySet(vNode, attribute.getKey(), attribute.getValue().getAsString());
+        for (Map.Entry<String,JsonElement> attribute: attributes) {
+            ProcessAttribute(graph, vNode, attribute);
         }
 
         return vNode;

@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -99,7 +101,11 @@ public class UploadController {
             {
                 ErrorSpec error = new ErrorSpec();
                 error.setCode("Error updating data");
-                error.setMessage(e.toString());
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+
+                error.setMessage(e.toString() + sw.toString());
                 result += gson.toJson(error);
             }
         }
