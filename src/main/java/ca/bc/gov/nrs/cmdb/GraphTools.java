@@ -74,13 +74,13 @@ public class GraphTools {
         }
 
         // Now add items in related edges.
-        Iterable<com.tinkerpop.blueprints.Edge> edges = vRequirement.getEdges(Direction.IN, "has");
+        Iterable<com.tinkerpop.blueprints.Edge> edges = vRequirement.getEdges(Direction.OUT, "has");
         if (edges != null && edges.iterator().hasNext()) {
             // loop through the result.
             com.tinkerpop.blueprints.Edge edge = edges.iterator().next();
             OrientVertex vNext = (OrientVertex) edge.getVertex(Direction.IN);
-            String type = vNext.getBaseClassName();
-            JsonObject requirement = GetRequirementFromVertex (graph, vRequirement);
+            String type = vNext.getType().getName();
+            JsonObject requirement = GetRequirementFromVertex (graph, vNext);
             result.add(type, requirement);
         }
 
@@ -434,13 +434,20 @@ public class GraphTools {
 
     }
 
-    public void UpdateRequirementSpecNodeEdge(OrientGraphNoTx graph, OrientVertex vRequirementSpec, String nodeKey)
+    public static void UpdateRequirementSpecNodeEdge(OrientGraphNoTx graph, String requirementSpecKey , String nodeKey)
     {
+        OrientVertex vRequirementSpec = null;
+        Iterable<Vertex> Requirements = graph.getVertices("RequirementSpec.key", requirementSpecKey);
+        if (Requirements != null && Requirements.iterator().hasNext()) {
+            vRequirementSpec = (OrientVertex) Requirements.iterator().next();
+        }
         // search for the related node.
         Iterable<Vertex> Nodes = graph.getVertices("Node.key", nodeKey);
-        if (Nodes != null && Nodes.iterator().hasNext()) {
+        if (vRequirementSpec!= null && Nodes != null && Nodes.iterator().hasNext()) {
             OrientVertex vNode = (OrientVertex) Nodes.iterator().next();
             vRequirementSpec.addEdge("matches",vNode);
         }
     }
+
+
 }

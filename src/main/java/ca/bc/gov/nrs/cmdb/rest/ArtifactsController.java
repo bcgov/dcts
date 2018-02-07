@@ -104,10 +104,10 @@ public class ArtifactsController {
 
             // get the requires and provides from the graph database.
 
-            JsonObject artifactRequires = GetRequirementsFromArtifactVertex (graph, "requires", vArtifact);
+            JsonObject artifactRequires = GetRequirementsFromArtifactVertex (graph, "Requires", vArtifact);
             artifact.setRequires(artifactRequires);
 
-            JsonObject artifactProvides = GetRequirementsFromArtifactVertex (graph, "provides", vArtifact);
+            JsonObject artifactProvides = GetRequirementsFromArtifactVertex (graph, "Provides", vArtifact);
             artifact.setProvides(artifactProvides);
 
         }
@@ -155,8 +155,8 @@ public class ArtifactsController {
             serverSpec1.setVersion("10.3.6");
 
             RequirementSpec serverSpec2 = new RequirementSpec();
-            serverSpec1.setInterface("com.oracle.forms");
-            serverSpec1.setVersion("???");
+            serverSpec2.setInterface("com.oracle.forms");
+            serverSpec2.setVersion("???");
 
             JsonObject providesList = new JsonObject();
 
@@ -173,9 +173,6 @@ public class ArtifactsController {
         }
 
         graph.shutdown();
-
-        // return the result
-        //return result.toJson();//gson.toJson(result);
 
         String result = null;
         try {

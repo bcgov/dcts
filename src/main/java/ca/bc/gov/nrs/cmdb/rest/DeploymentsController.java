@@ -146,11 +146,6 @@ public class DeploymentsController {
                         graph.addEdge(null, vDeploymentSpecificationPlan, vArtifact, "Deploys");
                     }
 
-                    // add edges for the nodes.
-
-
-
-
                 }
             }
             // done with the graph
@@ -232,6 +227,32 @@ public class DeploymentsController {
                 artifact.setKey((String) vArtifact.getProperty("key"));
                 artifact.setName((String) vArtifact.getProperty("name"));
                 //deploymentSpecificationPlan.setArtifact(artifact);
+            }
+
+            // update artifact matches.
+
+            Artifact[] artifacts = deploymentSpecificationPlan.getArtifacts();
+
+            for(Artifact input : artifacts) {
+                OrientVertex vArtifact = null;
+
+                JsonObject requirementHash = input.getRequires();
+
+                // loop through the set of requirements.
+                Set<Map.Entry<String, JsonElement>> requirements = requirementHash.entrySet();
+
+                for (Map.Entry<String, JsonElement> requirement : requirements) {
+
+                    JsonObject requirementProperties = (JsonObject) requirement.getValue();
+                    String requirementKey = requirementProperties.get("key").getAsString();
+                    // get matches.
+                    JsonObject matches = requirementProperties.get("matches").getAsJsonObject();
+
+                    String nodeKey = matches.get("node-key").getAsString();
+
+                    UpdateRequirementSpecNodeEdge(graph, requirementKey, nodeKey);
+                }
+
             }
 
         }
