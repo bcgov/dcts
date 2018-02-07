@@ -18,6 +18,12 @@ public class RequirementSpec {
 
 //  @Property("module_name")
 
+  private String key = null;
+  @JsonProperty("key")
+  public String getKey() { return key; }
+  public void setKey(String key ) { this.key = key; }
+
+
   private String quantifier = null;
 
   @JsonProperty("quantifier")
@@ -102,10 +108,6 @@ public class RequirementSpec {
     return Objects.hash(quantifier, version, scope, resolution);
   }
 
-  public String getKey (String keyType)
-  {
-    return keyType + ((Integer)hashCode()).toString();
-  }
 
   @Override
   public String toString() {

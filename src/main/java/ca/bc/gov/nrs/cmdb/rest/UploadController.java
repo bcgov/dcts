@@ -87,12 +87,25 @@ public class UploadController {
                 if (kind.equalsIgnoreCase("artifact"))
                 {
                     Artifact artifact = gson.fromJson(value, Artifact.class);
+                    String key = artifact.getKey();
+                    if (key == null || key.isEmpty())
+                    {
+                        artifact.setKey(UUID.randomUUID().toString());
+                    }
+
                     GraphTools.CreateArtifactVertex (graph, artifact);
                     result += gson.toJson(artifact);
                 }
 
                  else if (kind.equalsIgnoreCase("node")) {
                     Node node = gson.fromJson(value, Node.class);
+
+                    String key = node.getKey();
+                    if (key == null || key.isEmpty())
+                    {
+                        node.setKey(UUID.randomUUID().toString());
+                    }
+
                     GraphTools.CreateNodeVertex (graph, node);
                     result += gson.toJson(node);
                 }

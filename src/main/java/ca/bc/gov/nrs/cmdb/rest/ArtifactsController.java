@@ -102,44 +102,13 @@ public class ArtifactsController {
             artifact.setVendorContact((String)vArtifact.getProperty("vendorContact"));
             artifact.setVersion((String)vArtifact.getProperty("version"));
 
-            // construct the requires.
+            // get the requires and provides from the graph database.
 
-            SelectorSpec selector = new SelectorSpec();
-            selector.setName("com.oracle.weblogic.admin");
-            selector.setVersion("[10,11)" );
+            JsonObject artifactRequires = GetRequirementsFromArtifactVertex (graph, "requires", vArtifact);
+            artifact.setRequires(artifactRequires);
 
-
-            RequirementSpec host = new RequirementSpec();
-
-
-            host.setQuantifier("?");
-            host.setScope("deployment");
-            String [] expandArray = new String[1];
-            expandArray[0]="url";
-            host.setExpand(expandArray);
-
-            RequirementSpec credential = new RequirementSpec();
-
-            SelectorSpec credentialSelector = new SelectorSpec();
-            credentialSelector.setName ("com.oracle.weblogic.credential.deployer");
-
-
-            credential.setQuantifier("?");
-            credential.setScope("deployment");
-
-            JsonObject requiresHash = new JsonObject();
-
-            // convert the host object to a JsonObject
-            JsonObject hostObject = gson.fromJson( gson.toJson(host), JsonObject.class);
-
-            requiresHash.add("host", hostObject);
-
-            // convert the credential object to a JsonObject
-            JsonObject credentialObject = gson.fromJson( gson.toJson(credential), JsonObject.class);
-
-
-            requiresHash.add ("deployerCredentials", credentialObject);
-            artifact.setRequires(requiresHash);
+            JsonObject artifactProvides = GetRequirementsFromArtifactVertex (graph, "provides", vArtifact);
+            artifact.setProvides(artifactProvides);
 
         }
         else // create the demo item.
@@ -168,6 +137,12 @@ public class ArtifactsController {
 
             // convert the host object to a JsonObject
             JsonObject hostObject = gson.fromJson( gson.toJson(requirementSpec), JsonObject.class);
+
+            JsonObject selectorObject = new JsonObject();
+            selectorObject.add("os_family", new JsonPrimitive("SunOS"));
+            selectorObject.add("os_name", new JsonPrimitive("SunOS"));
+
+            hostObject.add( "selector", selectorObject );
 
             requiresHash.add ("host", hostObject);
 
@@ -201,7 +176,7 @@ public class ArtifactsController {
 
         // return the result
         //return result.toJson();//gson.toJson(result);
-        ObjectMapper mapper = new ObjectMapper();
+
         String result = null;
         try {
 
@@ -268,6 +243,13 @@ public class ArtifactsController {
 
         JsonObject providesList = new JsonObject();
         JsonObject hostObject = gson.fromJson( gson.toJson(host), JsonObject.class);
+
+        JsonObject selectorObject = new JsonObject();
+        selectorObject.add("os_family", new JsonPrimitive("SunOS"));
+        selectorObject.add("os_name", new JsonPrimitive("SunOS"));
+
+        hostObject.add( "selector", selectorObject );
+
         JsonObject credentialObject = gson.fromJson( gson.toJson(credential), JsonObject.class);
 
         providesList.add ("host", hostObject);

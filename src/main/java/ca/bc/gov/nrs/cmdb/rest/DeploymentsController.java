@@ -145,6 +145,12 @@ public class DeploymentsController {
                     if (edges == null || !edges.iterator().hasNext()) {
                         graph.addEdge(null, vDeploymentSpecificationPlan, vArtifact, "Deploys");
                     }
+
+                    // add edges for the nodes.
+
+
+
+
                 }
             }
             // done with the graph
