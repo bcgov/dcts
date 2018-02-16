@@ -65,9 +65,10 @@ $('#getServers').click(function() {
     $("#deploymentStartForm").submit(function(e) {
         //prevent Default functionality
         e.preventDefault();
-
+        var componentEnvironment = $("#componentEnvironment").val();
+        var version = $("#deploymentVersion").val();
         //get the action-url of the form
-        var actionurl = e.currentTarget.action;
+        var actionurl = e.currentTarget.action.trim() + "?componentEnvironmentName=" + encodeURIComponent( componentEnvironment ) + "&version=" + encodeURIComponent( version );
 
         $("#outputStart").html( 'Sending POST request to ' + actionurl + "\n" );
 
@@ -167,6 +168,12 @@ $('#getServers').click(function() {
 <hr/>
 <h2>Deployment Start </h2>
 <form id="deploymentStartForm" method="post" action="deployments/start">
+<h4>ComponentEnvironment Name:</h4>
+<input type="text" id="componentEnvironment" name="componentEnvironment" size="10" value="DEV"><br>
+    <h4>Deployment Version:</h4>
+    <input type="text" id="deploymentVersion" name="deploymentVersion" size="20" value="1.0"><br>
+
+
     <table border="0">
         <td>
             <h4>JSON List of Artifacts:</h4>
@@ -233,7 +240,7 @@ $('#getServers').click(function() {
 <hr/>
 
 <form id="reset" method="get" action="artifacts/resetTemplate" >
-    <input type="submit" value="Reset Artifact Template"> <input type="button" id=clearAll value="Clear Graph Database">
+    <input type="submit" value="Reset Artifact Template"> <input type="button" id=clearAll value="Clear Graph Database"> <a href="https://nrs-cmdb.pathfinder.gov.bc.ca">View the Graph Database</a>
 </form>
 
 </body>

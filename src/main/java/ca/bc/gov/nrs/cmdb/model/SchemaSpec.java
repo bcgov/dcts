@@ -16,8 +16,8 @@ public class SchemaSpec {
   private Artifact artifact = null;
 
 
-  @JsonProperty ("deploymentspec")
-  private DeploymentSpec deploymentSpec=null;
+  @JsonProperty ("deploymentSpecificationPlan")
+  private DeploymentSpecificationPlan deploymentSpec=null;
 
   @JsonProperty ("requirementspec")
   private RequirementSpec requirementSpec=null;

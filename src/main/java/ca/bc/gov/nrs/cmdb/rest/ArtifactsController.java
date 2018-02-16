@@ -71,6 +71,8 @@ public class ArtifactsController {
         return "ok";
     }
 
+
+
     @RequestMapping("/getTemplate")
     public String GetTemplate()
     {
@@ -79,40 +81,18 @@ public class ArtifactsController {
 
         OrientGraphNoTx graph =  factory.getNoTx();
         OrientVertex vArtifact = null;
-        Artifact artifact = new Artifact();
-
-
 
         if (graph.getVertexType("Artifact") == null)
         {
             graph.createVertexType("Artifact");
         }
 
-        Iterable<Vertex> Artifacts = graph.getVertices("Artifact.name", defaultName);
-        if (Artifacts != null && Artifacts.iterator().hasNext())
+        Artifact artifact = GetArtifactFromGraph(graph, defaultName);
+
+
+        if (artifact == null) // create the demo item.
         {
-            vArtifact = (OrientVertex) Artifacts.iterator().next();
-            artifact.setKey((String)vArtifact.getProperty("key"));
-            artifact.setName((String)vArtifact.getProperty("name"));
-            artifact.setSystem((String)vArtifact.getProperty("system"));
-            artifact.setShortName((String)vArtifact.getProperty("shortName"));
-            artifact.setDescription((String)vArtifact.getProperty("description"));
-            artifact.setUrl((String)vArtifact.getProperty("url"));
-            artifact.setVendor((String)vArtifact.getProperty("vendor"));
-            artifact.setVendorContact((String)vArtifact.getProperty("vendorContact"));
-            artifact.setVersion((String)vArtifact.getProperty("version"));
-
-            // get the requires and provides from the graph database.
-
-            JsonObject artifactRequires = GetRequirementsFromArtifactVertex (graph, "Requires", vArtifact);
-            artifact.setRequires(artifactRequires);
-
-            JsonObject artifactProvides = GetRequirementsFromArtifactVertex (graph, "Provides", vArtifact);
-            artifact.setProvides(artifactProvides);
-
-        }
-        else // create the demo item.
-        {
+            artifact = new Artifact();
             // create the view model
             artifact.setKey(UUID.randomUUID().toString());
             artifact.setName(defaultName);
@@ -170,6 +150,8 @@ public class ArtifactsController {
 
             // create the vertex.
             CreateArtifactVertex (graph, artifact);
+            // ensure we have all data from the graph.
+            artifact = GetArtifactFromGraph(graph, defaultName);
         }
 
         graph.shutdown();
@@ -202,7 +184,7 @@ public class ArtifactsController {
 
         // create the view model
         artifact.setKey(UUID.randomUUID().toString());
-        artifact.setName("BEAVERTON");
+        artifact.setName("ZEUS");
         artifact.setVersion("11.1.1");
 
             // create a requirement.

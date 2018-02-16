@@ -8,7 +8,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.tinkerpop.blueprints.Direction;
+import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
@@ -18,56 +20,45 @@ import java.util.*;
 
 public class GraphTools {
 
-
-    public static void updatedRequirements(OrientGraphNoTx graph, String edgeName, OrientVertex vArtifact, JsonObject requirementHash)
-    {
-        if (requirementHash != null)
-        {
+    public static void updatedRequirements(OrientGraphNoTx graph, String edgeName, OrientVertex vArtifact, JsonObject requirementHash) {
+        if (requirementHash != null) {
             // start by verifying that the RequirementSpec exists.
-            CreateVertexTypeIfNotExists( graph, "RequirementSpec");
+            CreateVertexTypeIfNotExists(graph, "RequirementSpec");
 
             // loop through the set of requirements.
-            Set<Map.Entry<String,JsonElement>> requirements = requirementHash.entrySet();
+            Set<Map.Entry<String, JsonElement>> requirements = requirementHash.entrySet();
 
-            for (Map.Entry<String,JsonElement> requirement: requirements)
-            {
+            for (Map.Entry<String, JsonElement> requirement : requirements) {
                 String key = UUID.randomUUID().toString();
-                OrientVertex vRequirementSpec = CreateVertexIfNotExists (graph, "RequirementSpec", key);
+                OrientVertex vRequirementSpec = CreateVertexIfNotExists(graph, "RequirementSpec", key);
                 safeVertexPropertySet(vRequirementSpec, "type", requirement.getKey());
                 // now add all of the other properties.
                 JsonObject requirementProperties = (JsonObject) requirement.getValue();
-                Set<Map.Entry<String,JsonElement>> properties = requirementProperties.entrySet();
-                for (Map.Entry<String,JsonElement> property: properties)
-                {
+                Set<Map.Entry<String, JsonElement>> properties = requirementProperties.entrySet();
+                for (Map.Entry<String, JsonElement> property : properties) {
                     JsonElement propertyValue = property.getValue();
-                    if (propertyValue.isJsonPrimitive())
-                    {
+                    if (propertyValue.isJsonPrimitive()) {
                         safeVertexPropertySet(vRequirementSpec, property.getKey(), propertyValue.getAsString());
-                    }
-                    else if (propertyValue.isJsonObject())
-                    {
+                    } else if (propertyValue.isJsonObject()) {
                         // create the object as a linked item.
                         createLinkedVertex(graph, "has", vRequirementSpec, property.getKey(), propertyValue.getAsJsonObject());
                     }
 
                 }
                 // create an edge linking the artifact.
-                CreateEdgeIfNotExists(graph,vArtifact,vRequirementSpec, edgeName);
+                CreateEdgeIfNotExists(graph, vArtifact, vRequirementSpec, edgeName);
             }
         }
     }
 
-    public static JsonObject GetRequirementFromVertex(OrientGraphNoTx graph, OrientVertex vRequirement)
-    {
+    public static JsonObject GetRequirementFromVertex(OrientGraphNoTx graph, OrientVertex vRequirement) {
         JsonObject result = new JsonObject();
 
-        Map<String, Object> properties =  vRequirement.getProperties();
+        Map<String, Object> properties = vRequirement.getProperties();
 
-        for (String propertyKey: properties.keySet())
-        {
+        for (String propertyKey : properties.keySet()) {
             // discard type as it is obtained one level up.
-            if (propertyKey != null   && !propertyKey.equalsIgnoreCase("type"))
-            {
+            if (propertyKey != null && !propertyKey.equalsIgnoreCase("type")) {
                 String propertyValue = properties.get(propertyKey).toString();
                 result.add(propertyKey, new JsonPrimitive(propertyValue));
             }
@@ -80,7 +71,7 @@ public class GraphTools {
             com.tinkerpop.blueprints.Edge edge = edges.iterator().next();
             OrientVertex vNext = (OrientVertex) edge.getVertex(Direction.IN);
             String type = vNext.getType().getName();
-            JsonObject requirement = GetRequirementFromVertex (graph, vNext);
+            JsonObject requirement = GetRequirementFromVertex(graph, vNext);
             result.add(type, requirement);
         }
 
@@ -88,8 +79,7 @@ public class GraphTools {
 
     }
 
-    public static JsonObject GetRequirementsFromArtifactVertex (OrientGraphNoTx graph, String edgeName, OrientVertex vArtifact)
-    {
+    public static JsonObject GetRequirementsFromArtifactVertex(OrientGraphNoTx graph, String edgeName, OrientVertex vArtifact) {
         JsonObject result = new JsonObject();
 
         // get the edges.
@@ -101,12 +91,75 @@ public class GraphTools {
             OrientVertex vRequirement = (OrientVertex) edge.getVertex(Direction.IN);
             String type = vRequirement.getProperty("type");
 
-            JsonObject requirement = GetRequirementFromVertex (graph, vRequirement);
+            JsonObject requirement = GetRequirementFromVertex(graph, vRequirement);
 
             result.add(type, requirement);
         }
         return result;
     }
+
+    public static String GetVersionFromArtifactVertex(OrientGraphNoTx graph, OrientVertex vArtifact) {
+        String result = null;
+        // get the edges.
+        Iterable<com.tinkerpop.blueprints.Edge> edges = vArtifact.getEdges(Direction.BOTH, "has_version");
+        if (edges != null && edges.iterator().hasNext()) {
+            // loop through the result.
+            com.tinkerpop.blueprints.Edge edge = edges.iterator().next();
+            OrientVertex vVersion = (OrientVertex) edge.getVertex(Direction.IN);
+            result = vVersion.getProperty("version");
+        }
+        return result;
+    }
+
+    public static Artifact GetArtifactFromGraph(OrientGraphNoTx graph, String name) {
+
+        Artifact artifact = null;
+
+        Iterable<Vertex> Artifacts = graph.getVertices("Artifact.name", name);
+        if(Artifacts !=null&&Artifacts.iterator().hasNext())
+
+        {
+            artifact = new Artifact();
+            OrientVertex vArtifact = (OrientVertex) Artifacts.iterator().next();
+            artifact.setKey((String) vArtifact.getProperty("key"));
+            artifact.setName((String) vArtifact.getProperty("name"));
+            artifact.setSystem((String) vArtifact.getProperty("system"));
+            artifact.setShortName((String) vArtifact.getProperty("shortName"));
+            artifact.setDescription((String) vArtifact.getProperty("description"));
+            artifact.setUrl((String) vArtifact.getProperty("url"));
+            artifact.setVendor((String) vArtifact.getProperty("vendor"));
+            artifact.setVendorContact((String) vArtifact.getProperty("vendorContact"));
+            artifact.setVersion((String) vArtifact.getProperty("version"));
+
+            // get the requires and provides from the graph database.
+            JsonObject artifactRequires = GetRequirementsFromArtifactVertex(graph, "Requires", vArtifact);
+            artifact.setRequires(artifactRequires);
+
+            JsonObject artifactProvides = GetRequirementsFromArtifactVertex(graph, "Provides", vArtifact);
+            artifact.setProvides(artifactProvides);
+
+            String version = GetVersionFromArtifactVertex(graph, vArtifact);
+            artifact.setVersion(version);
+        }
+        return artifact;
+    }
+
+    public static String GetComponentEnvironmentFromVertex (OrientGraphNoTx graph, OrientVertex vNode)
+    {
+        String result = null;
+
+        // get the edges.
+
+        Iterable<com.tinkerpop.blueprints.Edge> edges = vNode.getEdges(Direction.BOTH, "is_deployed_to");
+        if (edges != null && edges.iterator().hasNext()) {
+            // loop through the result.
+            com.tinkerpop.blueprints.Edge edge = edges.iterator().next();
+            OrientVertex vVersion = (OrientVertex) edge.getVertex(Direction.IN);
+            result = vVersion.getProperty("name");
+        }
+        return result;
+    }
+
 
 
     public static void safeVertexPropertySet (OrientVertex vertex, String propertyName, String propertyValue)
@@ -169,9 +222,50 @@ public class GraphTools {
     }
 
 
+    public static void CreateLinkedVersion (OrientGraphNoTx graph, OrientVertex vBase, String version)
+    {
+        CreateVertexTypeIfNotExists( graph, "Version");
+        OrientVertex vVersion = graph.addVertex("class:Version");
+        if (version != null)
+        {
+            vVersion.setProperty("version",version);
+        }
+        vBase.addEdge("has_version", vVersion);
+    }
+
+    public static void LinkComponentEnvironment (OrientGraphNoTx graph, OrientVertex vBase, String name)
+    {
+        String vertexType = "ComponentEnvironment";
+        OrientVertex vComponentEnvironment = null;
+        CreateVertexTypeIfNotExists( graph, vertexType);
+        Iterable<Vertex> ComponentEnvironments = graph.getVertices(vertexType + ".name", name);
+        if (ComponentEnvironments != null && ComponentEnvironments.iterator().hasNext())
+        {
+            vComponentEnvironment = (OrientVertex) ComponentEnvironments.iterator().next();
+        }
+        else
+        {
+            vComponentEnvironment = graph.addVertex("class:" + vertexType);
+            vComponentEnvironment.setProperty("name", name);
+        }
+
+
+        if (vComponentEnvironment != null)
+        {
+            // check to see if there is already and edge connecting them.
+            Iterable<Edge> edges = vBase.getEdges(Direction.IN, "is_deployed_to");
+            if (edges == null || !edges.iterator().hasNext())
+            {
+                // create the edge.
+                vBase.addEdge("is_deployed_to", vComponentEnvironment);
+            }
+        }
+    }
+
 
     public static OrientVertex CreateArtifactVertex (OrientGraphNoTx graph, Artifact artifact)
     {
+        CreateVertexTypeIfNotExists( graph, "Version");
         // create the item in the graph database.
         OrientVertex vArtifact = graph.addVertex("class:Artifact");
         vArtifact.setProperty("key", artifact.getKey());
@@ -183,7 +277,8 @@ public class GraphTools {
         safeVertexPropertySet(vArtifact,"url",artifact.getUrl());
         safeVertexPropertySet(vArtifact,"vendor",artifact.getVendor());
         safeVertexPropertySet(vArtifact,"vendorContact",artifact.getVendorContact());
-        safeVertexPropertySet(vArtifact,"version",artifact.getVersion());
+        String version = artifact.getVersion();
+        CreateLinkedVersion(graph, vArtifact, version);
 
         /* requires and provides are stored as related vertexes with edges.  */
 
@@ -273,7 +368,6 @@ public class GraphTools {
         }
         return result;
     }
-
 
     public static void CreateEdgeIfNotExists (OrientGraphNoTx graph, OrientVertex vSource, OrientVertex vDestination, String edgeLabel)
     {
@@ -417,6 +511,10 @@ public class GraphTools {
         if (requirementType.equals("host"))
         {
             requirementSpec = HaveNode(graph, requirement, requirementSpec);
+            if (!requirementSpec.has("matches") || requirementSpec.get("matches").getAsJsonObject() == null)
+            {
+                requirementSpec = HaveRequirementSpec(graph, requirement, requirementSpec);
+            }
         }
         else
         {
@@ -448,6 +546,5 @@ public class GraphTools {
             vRequirementSpec.addEdge("matches",vNode);
         }
     }
-
 
 }

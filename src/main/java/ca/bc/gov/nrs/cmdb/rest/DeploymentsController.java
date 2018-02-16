@@ -57,7 +57,7 @@ public class DeploymentsController {
      */
     @PostMapping("/start")
 
-    public ResponseEntity<String> StartDeployment(@RequestBody String rawData)
+    public ResponseEntity<String> StartDeployment( @RequestParam(required = true) String componentEnvironmentName, @RequestParam(required = true) String version, @RequestBody String rawData)
     {
         Artifact[] artifacts = gson.fromJson(rawData,Artifact[].class);
         OrientGraphNoTx graph =  factory.getNoTx();
@@ -116,6 +116,7 @@ public class DeploymentsController {
             DeploymentSpecificationPlan deploymentSpecificationPlan = new DeploymentSpecificationPlan();
 
             deploymentSpecificationPlan.setKey(UUID.randomUUID().toString());
+            deploymentSpecificationPlan.setComponentEnvironment(componentEnvironmentName);
 
             DateFormat dateFormat = new SimpleDateFormat("yy/mm/dd-hh:mm");
             Calendar cal = Calendar.getInstance();
@@ -123,6 +124,7 @@ public class DeploymentsController {
             deploymentSpecificationPlan.setName("New Deployment Specification Plan " + dateFormat.format(cal.getTime()));
             deploymentSpecificationPlan.setArtifacts(artifacts);
             deploymentSpecificationPlan.setDeployed(false);
+            deploymentSpecificationPlan.setVersion (version);
 
             if (graph.getVertexType("DeploymentSpecificationPlan") == null)
             {
@@ -208,11 +210,12 @@ public class DeploymentsController {
             vDeploymentSpecificationPlan.setProperty("deployment-successful", success.toString());
             // update other properties from the input data.
             if (deploymentSpecificationPlan.getSystem() != null) { vDeploymentSpecificationPlan.setProperty("System", deploymentSpecificationPlan.getSystem()); }
-            if (deploymentSpecificationPlan.getSystem() != null) { vDeploymentSpecificationPlan.setProperty("SymbolicName", deploymentSpecificationPlan.getSymbolicName()); }
-            if (deploymentSpecificationPlan.getSystem() != null) { vDeploymentSpecificationPlan.setProperty("Description", deploymentSpecificationPlan.getDescription()); }
-            if (deploymentSpecificationPlan.getSystem() != null) { vDeploymentSpecificationPlan.setProperty("Vendor", deploymentSpecificationPlan.getVendor()); }
-            if (deploymentSpecificationPlan.getSystem() != null) { vDeploymentSpecificationPlan.setProperty("Vendor-Contact", deploymentSpecificationPlan.getVendorContact()); }
-            if (deploymentSpecificationPlan.getSystem() != null) { vDeploymentSpecificationPlan.setProperty("Version", deploymentSpecificationPlan.getVersion()); }
+            if (deploymentSpecificationPlan.getSymbolicName() != null) { vDeploymentSpecificationPlan.setProperty("SymbolicName", deploymentSpecificationPlan.getSymbolicName()); }
+            if (deploymentSpecificationPlan.getDescription() != null) { vDeploymentSpecificationPlan.setProperty("Description", deploymentSpecificationPlan.getDescription()); }
+            if (deploymentSpecificationPlan.getVendor() != null) { vDeploymentSpecificationPlan.setProperty("Vendor", deploymentSpecificationPlan.getVendor()); }
+            if (deploymentSpecificationPlan.getVendorContact() != null) { vDeploymentSpecificationPlan.setProperty("Vendor-Contact", deploymentSpecificationPlan.getVendorContact()); }
+            CreateLinkedVersion(graph, vDeploymentSpecificationPlan, deploymentSpecificationPlan.getVersion());
+            LinkComponentEnvironment(graph,vDeploymentSpecificationPlan, deploymentSpecificationPlan.getComponentEnvironment() );
 
             deploymentSpecificationPlan.setDeployed(success);
 

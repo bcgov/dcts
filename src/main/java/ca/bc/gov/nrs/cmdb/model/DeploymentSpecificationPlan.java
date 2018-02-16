@@ -165,6 +165,14 @@ public class DeploymentSpecificationPlan {
   }
 
 
+  private String componentEnvironment = null;
+  @JsonProperty("componentEnvironment")
+  public String getComponentEnvironment() {
+    return componentEnvironment;
+  }
+  public void setComponentEnvironment(String componentEnvironment) {
+    this.componentEnvironment = componentEnvironment;
+  }
 
 
   @Override

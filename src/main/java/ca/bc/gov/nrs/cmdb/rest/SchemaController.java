@@ -5,19 +5,11 @@
  */
 package ca.bc.gov.nrs.cmdb.rest;
 
-import ca.bc.gov.nrs.cmdb.GraphTools;
-import ca.bc.gov.nrs.cmdb.model.Artifact;
-import ca.bc.gov.nrs.cmdb.model.UploadArtifactSpec;
 import ca.bc.gov.nrs.cmdb.model.SchemaSpec;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationConfig;
-import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
 import com.google.gson.Gson;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**

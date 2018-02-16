@@ -56,7 +56,7 @@ public class ComponentsController {
         CreateVertexTypeIfNotExists( graph, "Component");
         CreateVertexTypeIfNotExists( graph, "ExecutionEnvironment");
         CreateVertexTypeIfNotExists( graph, "Artifact");
-        CreateVertexTypeIfNotExists( graph, "DeploymentSpec");
+        CreateVertexTypeIfNotExists( graph, "DeploymentSpecificationPlan");
         CreateVertexTypeIfNotExists( graph, "DeviceNode");
         CreateVertexTypeIfNotExists( graph, "DeploymentSpec");
         CreateVertexTypeIfNotExists( graph, "PropertyValue");
