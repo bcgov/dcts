@@ -1,3 +1,4 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -187,14 +188,14 @@ public class ArtifactsController {
         artifact.setName("ZEUS");
         artifact.setVersion("11.1.1");
 
-            // create a requirement.
+        // create a requirement.
 
-            RequirementSpec requirementSpec = new RequirementSpec();
-            requirementSpec.setQuantifier("?");
+        RequirementSpec requirementSpec = new RequirementSpec();
+        requirementSpec.setQuantifier("?");
 
-            String[] expand = new String[1];
+        String[] expand = new String[1];
 
-            requirementSpec.setScope("deployment");
+        requirementSpec.setScope("deployment");
 
         // construct the requires.
 
@@ -249,10 +250,10 @@ public class ArtifactsController {
         String result = gson.toJson(uploadSpec);
         return result;
 
-        }
+    }
 
 
-        @PostMapping
+    @PostMapping
     public String CreateArtifact(@RequestBody Artifact artifact)
     {
         OrientGraphNoTx graph =  factory.getNoTx();

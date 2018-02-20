@@ -39,7 +39,7 @@ import static ca.bc.gov.nrs.cmdb.GraphTools.*;
 @RequestMapping("/deployments")
 
 public class DeploymentsController {
-    
+
     private static Gson gson;
 
     @Autowired

@@ -452,14 +452,14 @@ public class GraphTools {
 
                 if (isMatch)
                 {
-                        JsonObject matches = new JsonObject();
-                        matches.add ("node-key", new JsonPrimitive(vNode.getProperty("key").toString()));
+                    JsonObject matches = new JsonObject();
+                    matches.add ("node-key", new JsonPrimitive(vNode.getProperty("key").toString()));
 
-                        requirementSpec.add("matches", matches);
+                    requirementSpec.add("matches", matches);
 
 
 
-                        // update expand.  expand is an array of strings.
+                    // update expand.  expand is an array of strings.
                 }
             }
         }

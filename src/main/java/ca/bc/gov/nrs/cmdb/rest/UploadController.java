@@ -50,8 +50,8 @@ public class UploadController {
      * @return
      */
 
-    
-        @PostMapping
+
+    @PostMapping
     public String Upload(@RequestBody String data)
     {
         gson = new Gson();
@@ -97,7 +97,7 @@ public class UploadController {
                     result += gson.toJson(artifact);
                 }
 
-                 else if (kind.equalsIgnoreCase("node")) {
+                else if (kind.equalsIgnoreCase("node")) {
                     Node node = gson.fromJson(value, Node.class);
 
                     String key = node.getKey();
