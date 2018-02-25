@@ -20,6 +20,44 @@ import java.util.*;
 
 public class GraphTools {
 
+
+    public static void CreateComponentFromRequirement(OrientGraphNoTx graph, String edgeName, OrientVertex vArtifactDeploymentSpec, JsonObject requirementHash, OrientVertex vComponentEnvironment, OrientVertex vSystem) {
+        if (requirementHash != null) {
+            // start by verifying that the RequirementSpec exists.
+            CreateVertexTypeIfNotExists(graph, "Component");
+
+            // loop through the set of requirements.
+            Set<Map.Entry<String, JsonElement>> requirements = requirementHash.entrySet();
+
+            for (Map.Entry<String, JsonElement> requirement : requirements) {
+                String key = UUID.randomUUID().toString();
+                OrientVertex vComponent = CreateVertexIfNotExists(graph, "Component", key);
+                safeVertexPropertySet(vComponent, "type", requirement.getKey());
+                // now add all of the other properties.
+                JsonObject requirementProperties = (JsonObject) requirement.getValue();
+                Set<Map.Entry<String, JsonElement>> properties = requirementProperties.entrySet();
+                for (Map.Entry<String, JsonElement> property : properties) {
+                    JsonElement propertyValue = property.getValue();
+                    if (propertyValue.isJsonPrimitive()) {
+                        safeVertexPropertySet(vComponent, property.getKey(), propertyValue.getAsString());
+                    } else if (propertyValue.isJsonObject()) {
+                        // create the object as a linked item.
+                        createLinkedVertex(graph, "has", vComponent, property.getKey(), propertyValue.getAsJsonObject());
+                    }
+
+                }
+                // create an edge linking the Artifact Deployment Spec to the Component.
+                CreateEdgeIfNotExists(graph, vArtifactDeploymentSpec, vComponent, edgeName);
+
+                // create an edge linking the Component to the Component Environment.
+                CreateEdgeIfNotExists(graph, vComponent, vComponentEnvironment, "Instance");
+
+                // create an edge linking the Component to the Component Environment.
+                CreateEdgeIfNotExists(graph, vSystem, vComponent, "Has");
+            }
+        }
+    }
+    
     public static void updatedRequirements(OrientGraphNoTx graph, String edgeName, OrientVertex vArtifact, JsonObject requirementHash) {
         if (requirementHash != null) {
             // start by verifying that the RequirementSpec exists.

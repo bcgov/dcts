@@ -125,31 +125,93 @@ public class DeploymentsController {
             deploymentSpecificationPlan.setArtifacts(artifacts);
             deploymentSpecificationPlan.setDeployed(false);
             deploymentSpecificationPlan.setVersion (version);
+            deploymentSpecificationPlan.setSystem("OFM");
 
             if (graph.getVertexType("DeploymentSpecificationPlan") == null)
             {
                 graph.createVertexType("DeploymentSpecificationPlan");
             }
 
+            if (graph.getVertexType("ArtifactDeploymentSpec") == null)
+            {
+                graph.createVertexType("ArtifactDeploymentSpec");
+            }
+
+            if (graph.getVertexType("System") == null)
+            {
+                graph.createVertexType("System");
+            }
+
+            if (graph.getVertexType("ComponentEnvironment") == null)
+            {
+                graph.createVertexType("ComponentEnvironment");
+            }
+
             OrientVertex vDeploymentSpecificationPlan = graph.addVertex("class:DeploymentSpecificationPlan" );
             vDeploymentSpecificationPlan.setProperty("key", deploymentSpecificationPlan.getKey());
             vDeploymentSpecificationPlan.setProperty("name", deploymentSpecificationPlan.getName());
 
+            // create the system if it does not exist
+            OrientVertex vSystem = null;
+            Iterable<Vertex> vSystems = graph.getVertices("System.name", deploymentSpecificationPlan.getSystem());
+            if (vSystems != null && vSystems.iterator().hasNext()) {
+                vSystem = (OrientVertex) vSystems.iterator().next();
+            }
+            else
+            {
+                vSystem =graph.addVertex("class:System" );
+                vSystem.setProperty("key", UUID.randomUUID().toString());
+                vSystem.setProperty("name", deploymentSpecificationPlan.getSystem());
+            }
+
+
+            // create the component environment if it does not exist
+            OrientVertex vComponentEnvironment = null;
+
+            Iterable<Vertex> vComponentEnvironments = graph.getVertices("ComponentEnvironment.name", deploymentSpecificationPlan.getComponentEnvironment());
+            if (vComponentEnvironments != null && vComponentEnvironments.iterator().hasNext()) {
+                vComponentEnvironment = (OrientVertex) vComponentEnvironments.iterator().next();
+            }
+            else
+            {
+                vComponentEnvironment =graph.addVertex("class:ComponentEnvironment" );
+                vComponentEnvironment.setProperty("key", UUID.randomUUID().toString());
+                vComponentEnvironment.setProperty("name", deploymentSpecificationPlan.getComponentEnvironment());
+            }
+
+
             // update the graph
             for(Artifact input : artifacts) {
+                OrientVertex vArtifactDeploymentSpec = null;
                 OrientVertex vArtifact = null;
                 Iterable<Vertex> vArtifacts = graph.getVertices("Artifact.key", input.getKey());
                 if (vArtifacts != null && vArtifacts.iterator().hasNext()) {
                     vArtifact = (OrientVertex) vArtifacts.iterator().next();
-                    // Add an edge to the Artifact.
+                    // create the Artifact Deployment Spec
+                    vArtifactDeploymentSpec = graph.addVertex("class:ArtifactDeploymentSpec" );
+                    vArtifactDeploymentSpec.setProperty("name", input.getName());
+                    vArtifactDeploymentSpec.setProperty("key", UUID.randomUUID().toString());
 
-                    Iterable<com.tinkerpop.blueprints.Edge> edges = vDeploymentSpecificationPlan.getEdges(vArtifact, Direction.BOTH, "Deploys");
-                    if (edges == null || !edges.iterator().hasNext()) {
-                        graph.addEdge(null, vDeploymentSpecificationPlan, vArtifact, "Deploys");
+                    CreateEdgeIfNotExists(graph,vArtifactDeploymentSpec, vArtifact, "Using");
+                    CreateEdgeIfNotExists(graph,vDeploymentSpecificationPlan, vArtifactDeploymentSpec, "Has");
+
+                    // create the provides components.
+                    JsonObject provides = input.getProvides();
+                    if (provides != null)
+                    {
+                        CreateComponentFromRequirement(graph, "Provides", vArtifactDeploymentSpec, provides, vComponentEnvironment, vSystem  );
                     }
 
+                    // create the requires components.
+                    JsonObject requires = input.getRequires();
+                    if (provides != null)
+                    {
+                        CreateComponentFromRequirement(graph, "Requires", vArtifactDeploymentSpec, provides, vComponentEnvironment, vSystem  );
+                    }
                 }
             }
+
+
             // done with the graph
             graph.shutdown();
 
@@ -215,7 +277,7 @@ public class DeploymentsController {
             if (deploymentSpecificationPlan.getVendor() != null) { vDeploymentSpecificationPlan.setProperty("Vendor", deploymentSpecificationPlan.getVendor()); }
             if (deploymentSpecificationPlan.getVendorContact() != null) { vDeploymentSpecificationPlan.setProperty("Vendor-Contact", deploymentSpecificationPlan.getVendorContact()); }
             CreateLinkedVersion(graph, vDeploymentSpecificationPlan, deploymentSpecificationPlan.getVersion());
-            LinkComponentEnvironment(graph,vDeploymentSpecificationPlan, deploymentSpecificationPlan.getComponentEnvironment() );
+
 
             deploymentSpecificationPlan.setDeployed(success);
 
