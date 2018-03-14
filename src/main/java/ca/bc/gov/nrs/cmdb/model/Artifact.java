@@ -3,6 +3,7 @@ package ca.bc.gov.nrs.cmdb.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.AbstractMap;
@@ -19,16 +20,17 @@ import java.util.Objects;
 public class Artifact {
   private static Gson gson;
 
-  private String key = null;
+
 //  @Property("module_name")
-  private String name = null;
+
 
   public Artifact key(String key) {
     this.key = key;
     return this;
   }
 
-  @JsonProperty("key")
+  @SerializedName("key")
+  private String key = null;
   public String getKey() {
     return key;
   }
@@ -44,7 +46,8 @@ public class Artifact {
     return this;
   }
 
-  @JsonProperty("name")
+  @SerializedName("name")
+  private String name = null;
   public String getName() {
     return name;
   }
@@ -55,8 +58,8 @@ public class Artifact {
   /**
    * Short Name
    */
+  @SerializedName("shortName")
   private String shortName = null;
-  @JsonProperty("shortName")
   public String getShortName() {
     return shortName;
   }
@@ -67,8 +70,8 @@ public class Artifact {
   /**
    * System
    */
+  @SerializedName("system")
   private String system = null;
-  @JsonProperty("system")
   public String getSystem() {
     return system;
   }
@@ -79,8 +82,9 @@ public class Artifact {
   /**
    * Description
    */
+  @SerializedName("description")
   private String description = null;
-  @JsonProperty("description")
+
   public String getDescription() { return description;  }
   public void setDescription(String description) {
     this.description = description;
@@ -89,8 +93,9 @@ public class Artifact {
   /**
    * Url
    */
+  @SerializedName("url")
   private String url = null;
-  @JsonProperty("url")
+
   public String getUrl() { return url;  }
   public void setUrl(String url) {
     this.url = url;
@@ -99,8 +104,9 @@ public class Artifact {
   /**
    * Vendor
    */
+  @SerializedName("vendor")
   private String vendor = null;
-  @JsonProperty("vendor")
+
   public String getVendor() { return vendor;  }
   public void setVendor(String vendor) {
     this.vendor = vendor;
@@ -109,8 +115,8 @@ public class Artifact {
   /**
    * VendorContact
    */
+  @SerializedName("vendorContact")
   private String vendorContact = null;
-  @JsonProperty("vendorContact")
   public String getVendorContact() { return vendorContact;  }
   public void setVendorContact(String vendorContact) {
     this.vendorContact = vendorContact;
@@ -119,14 +125,14 @@ public class Artifact {
   /**
    * Version
    */
+  @SerializedName("version")
   private String version = null;
-  @JsonProperty("version")
   public String getVersion() { return version;  }
   public void setVersion(String version) {
     this.version = version;
   }
 
-  @JsonProperty("provides")
+  @SerializedName("provides")
   private JsonObject provides;
   public JsonObject getProvides() {
     return provides;
@@ -135,7 +141,7 @@ public class Artifact {
     this.provides = provides;
   }
 
-  @JsonProperty("requires")
+  @SerializedName("requires")
   private JsonObject requires;
   public JsonObject  getRequires() {
     return requires;

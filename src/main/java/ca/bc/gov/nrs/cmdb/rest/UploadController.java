@@ -9,12 +9,8 @@ import ca.bc.gov.nrs.cmdb.GraphTools;
 import ca.bc.gov.nrs.cmdb.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.*;
-import com.orientechnologies.orient.core.command.OCommandRequest;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
-import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
-import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,10 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.UUID;
-
-import static ca.bc.gov.nrs.cmdb.GraphTools.*;
 
 /**
  *
@@ -93,7 +86,7 @@ public class UploadController {
                         artifact.setKey(UUID.randomUUID().toString());
                     }
 
-                    GraphTools.CreateArtifactVertex (graph, artifact);
+                    GraphTools.createArtifactVertex(graph, artifact);
                     result += gson.toJson(artifact);
                 }
 
@@ -106,7 +99,7 @@ public class UploadController {
                         node.setKey(UUID.randomUUID().toString());
                     }
 
-                    GraphTools.CreateNodeVertex (graph, node);
+                    GraphTools.createNodeVertex(graph, node);
                     result += gson.toJson(node);
                 }
             }

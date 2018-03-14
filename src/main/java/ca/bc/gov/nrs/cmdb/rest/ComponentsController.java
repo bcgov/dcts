@@ -6,8 +6,6 @@
 package ca.bc.gov.nrs.cmdb.rest;
 
 import com.google.gson.Gson;
-import com.tinkerpop.blueprints.Direction;
-import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
@@ -15,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static ca.bc.gov.nrs.cmdb.GraphTools.CreateEdgeIfNotExists;
-import static ca.bc.gov.nrs.cmdb.GraphTools.CreateVertexIfNotExists;
-import static ca.bc.gov.nrs.cmdb.GraphTools.CreateVertexTypeIfNotExists;
+import static ca.bc.gov.nrs.cmdb.GraphTools.createEdgeIfNotExists;
+import static ca.bc.gov.nrs.cmdb.GraphTools.createVertexIfNotExists;
+import static ca.bc.gov.nrs.cmdb.GraphTools.createVertexTypeIfNotExists;
 
 /**
  *
@@ -53,66 +51,66 @@ public class ComponentsController {
          * Component is deployed to Execution Environment
          */
 
-        CreateVertexTypeIfNotExists( graph, "Component");
-        CreateVertexTypeIfNotExists( graph, "ExecutionEnvironment");
-        CreateVertexTypeIfNotExists( graph, "Artifact");
-        CreateVertexTypeIfNotExists( graph, "DeploymentSpecificationPlan");
-        CreateVertexTypeIfNotExists( graph, "DeviceNode");
-        CreateVertexTypeIfNotExists( graph, "DeploymentSpec");
-        CreateVertexTypeIfNotExists( graph, "PropertyValue");
-        CreateVertexTypeIfNotExists( graph, "PropertyName");
+        createVertexTypeIfNotExists( graph, "Component");
+        createVertexTypeIfNotExists( graph, "ExecutionEnvironment");
+        createVertexTypeIfNotExists( graph, "Artifact");
+        createVertexTypeIfNotExists( graph, "DeploymentSpecificationPlan");
+        createVertexTypeIfNotExists( graph, "DeviceNode");
+        createVertexTypeIfNotExists( graph, "DeploymentSpec");
+        createVertexTypeIfNotExists( graph, "PropertyValue");
+        createVertexTypeIfNotExists( graph, "PropertyName");
 
         // Create some sample data.
 
         // IRS is a top level component
-        OrientVertex vComponentIRS = CreateVertexIfNotExists (graph, "Component", "IRS");
+        OrientVertex vComponentIRS = createVertexIfNotExists(graph, "Component", "IRS");
 
         // Delivery:IRS is also a component.
-        OrientVertex vComponentDeliveryIRS = CreateVertexIfNotExists (graph, "Component", "DELIVERY_IRS");
+        OrientVertex vComponentDeliveryIRS = createVertexIfNotExists(graph, "Component", "DELIVERY_IRS");
 
         // Create an edge between the top level component and the delivery component.
-        CreateEdgeIfNotExists (graph, vComponentIRS, vComponentDeliveryIRS, "delivery instance");
+        createEdgeIfNotExists(graph, vComponentIRS, vComponentDeliveryIRS, "delivery instance");
 
         // Create an Artifact.
-        OrientVertex vArtifactIRS = CreateVertexIfNotExists (graph, "Artifact", "IRS_EAR");
+        OrientVertex vArtifactIRS = createVertexIfNotExists(graph, "Artifact", "IRS_EAR");
 
         // link it to the top level component.
-        CreateEdgeIfNotExists(graph, vComponentIRS, vArtifactIRS, "Manifested by");
+        createEdgeIfNotExists(graph, vComponentIRS, vArtifactIRS, "Manifested by");
 
         // Create an Execution Environment for the Artifact.
-        OrientVertex vExecutionEnvioronmentWLH01 = CreateVertexIfNotExists (graph, "ExecutionEnvironment", "WLH01");
+        OrientVertex vExecutionEnvioronmentWLH01 = createVertexIfNotExists(graph, "ExecutionEnvironment", "WLH01");
 
         // link it to the artifact.
-        CreateEdgeIfNotExists(graph, vArtifactIRS, vExecutionEnvioronmentWLH01, "Deployed to");
+        createEdgeIfNotExists(graph, vArtifactIRS, vExecutionEnvioronmentWLH01, "Deployed to");
 
         // Create an execution environment for delivery
-        OrientVertex vExecutionEnvironment = CreateVertexIfNotExists (graph, "ExecutionEnvironment", "DELIVERY_WLH01");
+        OrientVertex vExecutionEnvironment = createVertexIfNotExists(graph, "ExecutionEnvironment", "DELIVERY_WLH01");
 
         // The delivery component is deploy to the execution environment.
-        CreateEdgeIfNotExists(graph, vComponentDeliveryIRS, vExecutionEnvironment, "Deployed to");
+        createEdgeIfNotExists(graph, vComponentDeliveryIRS, vExecutionEnvironment, "Deployed to");
 
         // There is also a link to the logical execution enviornment
-        CreateEdgeIfNotExists (graph, vExecutionEnvioronmentWLH01, vExecutionEnvironment, "Instance of");
+        createEdgeIfNotExists(graph, vExecutionEnvioronmentWLH01, vExecutionEnvironment, "Instance of");
 
         // Create a Deployment Spec
-        OrientVertex vDeploymentSpec = CreateVertexIfNotExists (graph, "DeploymentSpec", "DELIVERY_IRS_DEPLOYMENTSPEC");
+        OrientVertex vDeploymentSpec = createVertexIfNotExists(graph, "DeploymentSpec", "DELIVERY_IRS_DEPLOYMENTSPEC");
         // link it to the delivery component.
-        CreateEdgeIfNotExists (graph, vComponentDeliveryIRS, vDeploymentSpec, "has");
+        createEdgeIfNotExists(graph, vComponentDeliveryIRS, vDeploymentSpec, "has");
 
         // create a parent deployment spec.
-        OrientVertex vIRSDeploymentSpec = CreateVertexIfNotExists (graph, "DeploymentSpec", "IRS_DEPLOYMENTSPEC");
+        OrientVertex vIRSDeploymentSpec = createVertexIfNotExists(graph, "DeploymentSpec", "IRS_DEPLOYMENTSPEC");
 
         // link between the parent and child deployment spec
-        CreateEdgeIfNotExists (graph, vIRSDeploymentSpec, vDeploymentSpec, "Instance of");
+        createEdgeIfNotExists(graph, vIRSDeploymentSpec, vDeploymentSpec, "Instance of");
 
         // link the parent deployment spec to the artifact.
-        CreateEdgeIfNotExists (graph, vArtifactIRS, vIRSDeploymentSpec, "Deployed to");
+        createEdgeIfNotExists(graph, vArtifactIRS, vIRSDeploymentSpec, "Deployed to");
 
         // Create a device node.
-        OrientVertex vDeviceNode = CreateVertexIfNotExists (graph, "DeviceNode", "BLEWIT");
+        OrientVertex vDeviceNode = createVertexIfNotExists(graph, "DeviceNode", "BLEWIT");
 
         // The execution environment is hosted on a device node.
-        CreateEdgeIfNotExists (graph, vExecutionEnvironment, vDeviceNode, "hosted by");
+        createEdgeIfNotExists(graph, vExecutionEnvironment, vDeviceNode, "hosted by");
 
         graph.shutdown();
         return "Model has been created.";

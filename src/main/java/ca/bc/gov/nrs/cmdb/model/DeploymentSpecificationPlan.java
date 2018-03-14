@@ -1,6 +1,7 @@
 package ca.bc.gov.nrs.cmdb.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 import java.util.Objects;
@@ -18,6 +19,7 @@ public class DeploymentSpecificationPlan {
   /**
    * A system-generated unique identifier for a module
    **/
+  @SerializedName("key")
   private String key = null;
 
   public DeploymentSpecificationPlan key(String key) {
@@ -38,6 +40,7 @@ public class DeploymentSpecificationPlan {
  * true - deployed successfully
  * false - not deployed
  */
+  @SerializedName("deployed")
   private Boolean deployed = null;
 
   @JsonProperty("deployed")
@@ -49,8 +52,9 @@ public class DeploymentSpecificationPlan {
   }
 
   // The Artifact specified as a parameter when the DeploymentSpecificationPlan was created.
-  private Artifact[] artifacts;
 
+  @SerializedName("artifacts")
+  private Artifact[] artifacts;
   @JsonProperty("artifacts")
   public Artifact[] getArtifacts() {return artifacts;}
   public void setArtifacts(Artifact[] artifacts) {this.artifacts = artifacts;}
@@ -58,6 +62,7 @@ public class DeploymentSpecificationPlan {
   /**
    * The name of the application.
    **/
+  @SerializedName("Name")
   private String name = null;
   public DeploymentSpecificationPlan name(String name) {
     this.name = name;
@@ -75,6 +80,7 @@ public class DeploymentSpecificationPlan {
   /**
    * System
    */
+  @SerializedName("System")
   private String system = null;
 
   @JsonProperty("System")
@@ -88,6 +94,7 @@ public class DeploymentSpecificationPlan {
   /**
    * SymbolicName
    */
+  @SerializedName("SymbolicName")
   private String symbolicName = null;
   @JsonProperty("SymbolicName")
   public String getSymbolicName() {
@@ -101,6 +108,7 @@ public class DeploymentSpecificationPlan {
   /**
    * Description
    */
+  @SerializedName("Description")
   private String description = null;
   @JsonProperty("Description")
   public String getDescription() {
@@ -113,6 +121,7 @@ public class DeploymentSpecificationPlan {
   /**
    * Vendor
    */
+  @SerializedName("Vendor")
   private String vendor = null;
   @JsonProperty("Vendor")
   public String getVendor() {
@@ -125,6 +134,7 @@ public class DeploymentSpecificationPlan {
   /**
    * Vendor-Contact
    */
+  @SerializedName("Vendor-Contact")
   private String vendorContact = null;
   @JsonProperty("Vendor-Contact")
   public String getVendorContact() {
@@ -137,6 +147,8 @@ public class DeploymentSpecificationPlan {
   /**
    * Version
    */
+
+  @SerializedName("version")
   private String version = null;
   @JsonProperty("version")
   public String getVersion() {
@@ -146,6 +158,7 @@ public class DeploymentSpecificationPlan {
     this.version = version;
   }
 
+  @SerializedName("Export")
   private Export[] export = null;
   @JsonProperty("Export")
   public Export[] getExport() {
@@ -155,6 +168,7 @@ public class DeploymentSpecificationPlan {
     this.export = export;
   }
 
+  @SerializedName("Import")
   private Import[] imports = null;
   @JsonProperty("Import")
   public Import[] getImport() {
@@ -165,6 +179,7 @@ public class DeploymentSpecificationPlan {
   }
 
 
+  @SerializedName("componentEnvironment")
   private String componentEnvironment = null;
   @JsonProperty("componentEnvironment")
   public String getComponentEnvironment() {

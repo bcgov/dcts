@@ -2,6 +2,7 @@ package ca.bc.gov.nrs.cmdb.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -14,68 +15,49 @@ import java.util.Objects;
 //@Vertex
 public class RequirementSpec {
   private static Gson gson;
-//  @Id
 
-//  @Property("module_name")
 
+  @SerializedName("key")
   private String key = null;
-  @JsonProperty("key")
   public String getKey() { return key; }
   public void setKey(String key ) { this.key = key; }
 
-
+  @SerializedName("quantifier")
   private String quantifier = null;
-
-  @JsonProperty("quantifier")
   public String getQuantifier() { return quantifier; }
   public void setQuantifier(String quantifier ) { this.quantifier = quantifier; }
 
-  private String interfaceText = null;
-  @JsonProperty("interface")
-  public String getInterface() { return interfaceText; }
-  public void setInterface(String interfaceText ) { this.interfaceText = interfaceText; }
+  @SerializedName("interface")
+  private String _interface = null;
+  public String getInterface() { return _interface; }
+  public void setInterface(String interfaceText ) { this._interface = interfaceText; }
 
+  @SerializedName("resolution")
   private String resolution = null;
-
-  @JsonProperty("resolution")
   public String getResolution() { return resolution; }
   public void setResolution(String resolution ) { this.resolution = resolution; }
 
+  @SerializedName("artifact-key")
   private String artifactKey = null;
-
-  @JsonProperty("artifact-key")
   public String getArtifactKey() { return artifactKey; }
   public void setArtifactKey(String artifactKey ) { this.artifactKey = artifactKey; }
 
+  @SerializedName("expand")
   private String[] expand = null;
-
-  @JsonProperty("expand")
   public String[] getExpand() { return expand; }
   public void setExpand(String[] expand ) { this.expand = expand; }
 
 
+  @SerializedName("scope")
   private String scope = null;
-  @JsonProperty("scope")
   public String getScope() { return scope; }
   public void setScope(String scope ) { this.scope = scope; }
 
-  private String version = null;
-
-  private ErrorSpec error = null;
-  @JsonProperty("error")
-  public ErrorSpec getError() { return error; }
-  public void setError(ErrorSpec error ) { this.error = error; }
-
-  private HashMap<String, String> matches;
-  @JsonProperty("matches")
-  public HashMap<String, String> getMatches() { return matches; }
-  public void setMatches(HashMap<String, String> matches ) { this.matches = matches; }
-
   /**
-   * The version of the Export
+   * The version of the RequirementSpec
    **/
-
-  @JsonProperty("version")
+  @SerializedName("version")
+  private  String version = null;
   public String getVersion() {
     return version;
   }
@@ -87,6 +69,17 @@ public class RequirementSpec {
     this.version = version;
     return this;
   }
+
+  @SerializedName("error")
+  private ErrorSpec error = null;
+  public ErrorSpec getError() { return error; }
+  public void setError(ErrorSpec error ) { this.error = error; }
+
+  @SerializedName("matches")
+  private HashMap<String, String> matches;
+  public HashMap<String, String> getMatches() { return matches; }
+  public void setMatches(HashMap<String, String> matches ) { this.matches = matches; }
+
 
 
 
