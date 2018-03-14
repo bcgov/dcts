@@ -127,11 +127,15 @@ public class GraphTools {
     }
 
     public static void removeEdgeIfExists(OrientGraphNoTx graph, OrientVertex vSource, OrientVertex vDestination, String edgeLabel) {
-        // remove the edge if it exists.
-        Iterable<com.tinkerpop.blueprints.Edge> edges = vSource.getEdges(vDestination, Direction.BOTH, edgeLabel);
-        if (edges != null && edges.iterator().hasNext()) {
-            graph.removeEdge(edges.iterator().next());
+        if (vSource != null && vDestination != null)
+        {
+            // remove the edge if it exists.
+            Iterable<com.tinkerpop.blueprints.Edge> edges = vSource.getEdges(vDestination, Direction.BOTH, edgeLabel);
+            if (edges != null && edges.iterator().hasNext()) {
+                graph.removeEdge(edges.iterator().next());
+            }
         }
+
     }
 
     public static void createRequiresObjects(OrientGraphNoTx graph, String edgeName, OrientVertex vArtifactDeploymentSpec, JsonObject requirementHash) {
