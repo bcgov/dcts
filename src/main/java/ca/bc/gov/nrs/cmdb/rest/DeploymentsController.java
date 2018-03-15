@@ -154,6 +154,8 @@ public class DeploymentsController {
             OrientVertex vDeploymentSpecificationPlan = graph.addVertex("class:DeploymentSpecificationPlan" );
             vDeploymentSpecificationPlan.setProperty("key", deploymentSpecificationPlan.getKey());
             vDeploymentSpecificationPlan.setProperty("name", deploymentSpecificationPlan.getName());
+            vDeploymentSpecificationPlan.setProperty("environment", deploymentSpecificationPlan.getComponentEnvironment());
+
 
             // create the system if it does not exist
             OrientVertex vSystem = null;
@@ -307,20 +309,18 @@ public class DeploymentsController {
             }
 
             // remove instance links from Components.
-
-
             Artifact[] artifacts = deploymentSpecificationPlan.getArtifacts();
 
             for(Artifact input : artifacts) {
                 OrientVertex vArtifact = null;
-
                 JsonObject providesHash = input.getProvides();
-
                 cleanupComponentInstanceLink(graph,providesHash,deploymentSpecificationPlan.getComponentEnvironment());
-
-
-
             }
+
+            // Create a link to Previous deployments.
+            linkPreviousDeployments (graph, vDeploymentSpecificationPlan, deploymentSpecificationPlan);
+
+
         }
         else
         {

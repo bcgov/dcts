@@ -1,6 +1,7 @@
 package ca.bc.gov.nrs.cmdb;
 
 import ca.bc.gov.nrs.cmdb.model.Artifact;
+import ca.bc.gov.nrs.cmdb.model.DeploymentSpecificationPlan;
 import ca.bc.gov.nrs.cmdb.model.Node;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -299,7 +300,7 @@ public class GraphTools {
         return result;
     }
 
-    public static Artifact GetArtifactFromGraph(OrientGraphNoTx graph, String name) {
+    public static Artifact getArtifactFromGraph(OrientGraphNoTx graph, String name) {
 
         Artifact artifact = null;
 
@@ -435,6 +436,34 @@ public class GraphTools {
             }
         }
     }
+
+    public static void linkPreviousDeployments(OrientGraphNoTx graph, OrientVertex vDeployment, DeploymentSpecificationPlan deploymentSpecificationPlan)
+    {
+        // determine if there are similar deployments to link.
+        Iterable<Vertex> deploymentSpecificationPlans = graph.getVertices("DeploymentSpecificationPlan.environment", deploymentSpecificationPlan.getComponentEnvironment());
+        OrientVertex lastDeployment = null;
+
+        for (Vertex c :   deploymentSpecificationPlans) {
+            OrientVertex current = (OrientVertex) c;
+            // check to see if we are not on the same deployment as is being processed now.
+            String currentIdentity = current.getIdentity().toString();
+            String deploymentIdentity = vDeployment.getIdentity().toString();
+            if (! currentIdentity.equalsIgnoreCase(deploymentIdentity)) {
+
+                Iterable<Edge> edges = current.getEdges(Direction.OUT, "After");
+                if (edges == null || !edges.iterator().hasNext()) {
+                    lastDeployment = current;
+                }
+
+            }
+        }
+        // check to see if we found a match.
+        if (lastDeployment != null) {
+            // add the After edge.
+            lastDeployment.addEdge("After", vDeployment);
+        }
+    }
+
 
     public static void createVertexTypeIfNotExists(OrientGraphNoTx graph, String name) {
         if (graph.getVertexType(name) == null) {

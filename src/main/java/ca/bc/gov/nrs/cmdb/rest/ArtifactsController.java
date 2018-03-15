@@ -82,7 +82,7 @@ public class ArtifactsController {
             graph.createVertexType("Artifact");
         }
 
-        Artifact artifact = GetArtifactFromGraph(graph, defaultName);
+        Artifact artifact = getArtifactFromGraph(graph, defaultName);
 
 
         if (artifact == null) // create the demo item.
@@ -146,7 +146,7 @@ public class ArtifactsController {
             // create the vertex.
             createArtifactVertex(graph, artifact);
             // ensure we have all data from the graph.
-            artifact = GetArtifactFromGraph(graph, defaultName);
+            artifact = getArtifactFromGraph(graph, defaultName);
         }
 
         graph.shutdown();
